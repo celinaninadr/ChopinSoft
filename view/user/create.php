@@ -7,7 +7,6 @@
   
   <!-- Importer model-viewer pour la 3D -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
-  
 </head>
 <body>
 
@@ -37,25 +36,36 @@
   <p class="small">Clique sur un monde avant de jouer.</p>
 
   <h2>Choisir un avatar (3D)</h2>
-  <div class="avatars">
-    <?php foreach ($avatars as $a): ?>
-      <label class="avatar" data-avatar-id="<?php echo (int)$a['idAvatar']; ?>">
-        <input type="radio" name="idAvatar" value="<?php echo (int)$a['idAvatar']; ?>" required>
-        <div><b><?php echo htmlspecialchars($a['nameAvatar']); ?></b></div>
-        <model-viewer 
-          src="<?php echo htmlspecialchars($a['modelAvatar']); ?>" 
-          camera-controls 
-          auto-rotate
-          shadow-intensity="1"
-          exposure="1.0"
-          camera-orbit="0deg 75deg 2.5m"
-          min-camera-orbit="auto auto 1m"
-          max-camera-orbit="auto auto 10m"
-          loading="eager"
-        ></model-viewer>
-      </label>
-    <?php endforeach; ?>
+  <div class="carousel-container">
+    <button type="button" class="carousel-btn prev" id="prevBtn">‹</button>
+    
+    <div class="carousel-wrapper">
+      <div class="avatars-carousel" id="avatarsCarousel">
+        <?php foreach ($avatars as $a): ?>
+          <label class="avatar-slide" data-avatar-id="<?php echo (int)$a['idAvatar']; ?>">
+            <input type="radio" name="idAvatar" value="<?php echo (int)$a['idAvatar']; ?>" required>
+            <div class="avatar-name"><b><?php echo htmlspecialchars($a['nameAvatar']); ?></b></div>
+            <model-viewer 
+              src="<?php echo htmlspecialchars($a['modelAvatar']); ?>" 
+              camera-controls 
+              auto-rotate
+              shadow-intensity="1"
+              exposure="1.0"
+              camera-orbit="0deg 75deg 8m"
+              min-camera-orbit="auto auto 2m"
+              max-camera-orbit="auto auto 12m"
+              loading="eager"
+            ></model-viewer>
+          </label>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    
+    <button type="button" class="carousel-btn next" id="nextBtn">›</button>
   </div>
+  
+  <div class="carousel-indicators" id="carouselIndicators"></div>
+  <div class="carousel-counter" id="carouselCounter"></div>
 
   <div class="actions">
     <button class="btn" type="submit">Jouer</button>
@@ -80,21 +90,116 @@
     });
   });
 
-  // Gestion de la sélection des avatars
-  const avatarLabels = document.querySelectorAll('.avatar');
-  const avatarRadios = document.querySelectorAll('input[name="idAvatar"]');
+  // Gestion du carousel d'avatars
+  const carousel = document.getElementById('avatarsCarousel');
+  const slides = document.querySelectorAll('.avatar-slide');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const indicatorsContainer = document.getElementById('carouselIndicators');
+  const counterElement = document.getElementById('carouselCounter');
   
-  avatarRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      // Retirer la classe selected de tous les avatars
-      avatarLabels.forEach(label => label.classList.remove('selected'));
-      
-      // Ajouter la classe selected à l'avatar sélectionné
-      if (this.checked) {
-        this.closest('.avatar').classList.add('selected');
+  let currentIndex = 0;
+  const totalSlides = slides.length;
+
+  // Créer les indicateurs
+  function createIndicators() {
+    indicatorsContainer.innerHTML = '';
+    for (let i = 0; i < totalSlides; i++) {
+      const indicator = document.createElement('div');
+      indicator.classList.add('indicator');
+      if (i === 0) indicator.classList.add('active');
+      indicator.addEventListener('click', () => goToSlide(i));
+      indicatorsContainer.appendChild(indicator);
+    }
+  }
+
+  // Mettre à jour le compteur
+  function updateCounter() {
+    counterElement.textContent = `Avatar ${currentIndex + 1} sur ${totalSlides}`;
+  }
+
+  // Aller à un slide spécifique
+  function goToSlide(index) {
+    if (index < 0) index = 0;
+    if (index >= totalSlides) index = totalSlides - 1;
+    
+    currentIndex = index;
+    carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+    
+    // Mettre à jour les classes active
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === currentIndex);
+    });
+    
+    // Mettre à jour les indicateurs
+    document.querySelectorAll('.indicator').forEach((ind, i) => {
+      ind.classList.toggle('active', i === currentIndex);
+    });
+    
+    // Sélectionner automatiquement le radio button
+    const currentSlide = slides[currentIndex];
+    const radio = currentSlide.querySelector('input[type="radio"]');
+    if (radio) {
+      radio.checked = true;
+    }
+    
+    // Mettre à jour les boutons
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === totalSlides - 1;
+    
+    // Mettre à jour le compteur
+    updateCounter();
+  }
+
+  // Navigation
+  prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+  nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+  // Navigation au clavier
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      prevBtn.click();
+    } else if (e.key === 'ArrowRight') {
+      nextBtn.click();
+    }
+  });
+
+  // Clic sur un slide pour le sélectionner
+  slides.forEach((slide, index) => {
+    slide.addEventListener('click', () => {
+      if (index !== currentIndex) {
+        goToSlide(index);
       }
     });
   });
+
+  // Support du swipe sur mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  carousel.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  carousel.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  });
+
+  function handleSwipe() {
+    if (touchStartX - touchEndX > 50) {
+      // Swipe left
+      nextBtn.click();
+    }
+    if (touchEndX - touchStartX > 50) {
+      // Swipe right
+      prevBtn.click();
+    }
+  }
+
+  // Initialisation
+  createIndicators();
+  goToSlide(0);
 
   // Validation du formulaire
   document.getElementById('avatarForm').addEventListener('submit', function(e) {
