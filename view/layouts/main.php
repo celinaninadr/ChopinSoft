@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chopin VR</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#f6f6f6;margin:0}
+    a{text-decoration:none}
+    .topbar{background:#111;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+    .brand{color:#fff;font-weight:700}
+    .nav a{color:#fff;margin-left:12px}
+    .container{max-width:1000px;margin:20px auto;padding:0 14px}
+    .center{height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px}
+    .btn{display:inline-block;background:#2b59ff;color:#fff;padding:12px 18px;border-radius:8px;border:0;cursor:pointer}
+    .btn.secondary{background:#444}
+    .btn.danger{background:#d03333}
+    .card{background:#fff;border:1px solid #e6e6e6;border-radius:10px;padding:14px;margin:12px 0}
+    .flash{max-width:1000px;margin:12px auto;background:#fff8d6;border:1px solid #f2d96b;padding:10px 14px;border-radius:10px}
+    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .actions{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .worlds{display:flex;gap:10px;flex-wrap:wrap}
+    .world{background:#fff;border:1px solid #e6e6e6;border-radius:10px;padding:10px 14px;cursor:pointer}
+    .avatars{display:flex;gap:10px;flex-wrap:wrap}
+    .avatar{border:1px solid #e6e6e6;background:#fff;border-radius:10px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;width:200px;gap:8px}
+    .small{font-size:14px;color:#555}
+    table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e6e6e6}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+    th{background:#fafafa}
+    model-viewer{width:180px;height:180px;background:#f4f4f4;border:1px solid #eee;border-radius:10px}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/ChopinSoft/index.php?route=home/index">Chopin VR</a>
+    <nav class="nav">
+      <a href="/ChopinSoft/index.php?route=home/index">Accueil</a>
+      <?php if (!empty($_SESSION['user'])): ?>
+        <?php if (($_SESSION['user']['userRole'] ?? '') === 'ADMIN'): ?>
+          <a href="/ChopinSoft/index.php?route=admin/users">Admin</a>
+        <?php else: ?>
+          <a href="/ChopinSoft/index.php?route=user/profile">Profil</a>
+        <?php endif; ?>
+        <a href="/ChopinSoft/index.php?route=user/logout">Déconnexion</a>
+      <?php endif; ?>
+    </nav>
+  </header>
+
+  <?php $flash = getFlash(); if ($flash): ?>
+    <div class="flash"><?php echo htmlspecialchars($flash); ?></div>
+  <?php endif; ?>
+
+  <main class="container">
+    <?php echo $content; ?>
+  </main>
+</body>
+</html>

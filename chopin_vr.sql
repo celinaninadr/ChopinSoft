@@ -119,6 +119,31 @@ ALTER TABLE `world`
 ALTER TABLE `user`
   ADD CONSTRAINT `fk_user_avatar` FOREIGN KEY (`idAvatar`) REFERENCES `avatar` (`idAvatar`),
   ADD CONSTRAINT `fk_user_world` FOREIGN KEY (`idWorld`) REFERENCES `world` (`idWorld`);
+
+-- --------------------------------------------------------
+-- Données d'exemple
+-- --------------------------------------------------------
+
+INSERT INTO `avatar` (`idAvatar`, `nameAvatar`, `modelAvatar`, `imgAvatar`) VALUES
+(1, 'Chevalier', '', NULL),
+(2, 'Mage', '', NULL),
+(3, 'Explorateur', '', NULL);
+
+INSERT INTO `world` (`idWorld`, `nameWorld`, `imgWorld`, `urlWorld`) VALUES
+(1, 'Monde 1', NULL, 'https://example.com/monde1'),
+(2, 'Monde 2', NULL, 'https://example.com/monde2'),
+(3, 'Monde 3', NULL, 'https://example.com/monde3'),
+(4, 'Monde 4', NULL, 'https://example.com/monde4'),
+(5, 'Monde 5', NULL, 'https://example.com/monde5');
+
+-- Admin par défaut: login admin / mdp admin
+-- NOTE: mot de passe hashé (password_hash('admin', PASSWORD_DEFAULT))
+INSERT INTO `user` (`idUser`, `username`, `password`, `userRole`, `idAvatar`, `idWorld`) VALUES
+(1, 'admin', '$2y$10$Qh6G7xN1gGQX4Qy2VdU7XelQm3lVQ8qzq3z3mS3tqG0d5VQXkz9cK', 'ADMIN', 1, 1);
+
+ALTER TABLE `avatar` AUTO_INCREMENT = 4;
+ALTER TABLE `world` AUTO_INCREMENT = 6;
+ALTER TABLE `user` AUTO_INCREMENT = 2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
