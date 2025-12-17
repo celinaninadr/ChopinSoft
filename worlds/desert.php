@@ -42,7 +42,7 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         <a-entity environment="preset: egypt; groundYScale: 6; fog: 0.7"></a-entity>
         <a-entity light="type:ambient;intensity:1.0"></a-entity>
 
-        <a-entity gltf-model="#sphynx" position="20 5 20" scale="10 10 10" rotation="0 30 0"> </a-entity>
+        <a-entity gltf-model="#sphynx" position="-14.724 10.495 20" scale="3.000 3.000 3.000" rotation="0 30 0"> </a-entity>
         <a-entity gltf-model="#camel" position="10 0 0" scale="2 2 2" rotation="0 90 0"> </a-entity>
         <a-entity gltf-model="#anubis" position="5 6 -2" scale="1 1 1" rotation="0 180 0"> </a-entity>
         <a-entity gltf-model="#anubis" position="5 6 -20" scale="1 1 1" rotation="0 180 0"> </a-entity>
@@ -77,7 +77,19 @@ button: trigger" hand-controls="hand: left"></a-entity>
             rotation="0 180 0"></a-entity>
 
         <!-- Camels Respite -->
-        <a-entity gltf-model="#camels_respite" position="15 0 15" scale="0.5 0.5 0.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#camels_respite" position="-54.908 0.266 32.358" scale="0.5 0.5 0.5" rotation="0.000 135.204 0.000"></a-entity>
+
+        <!-- Temple Entrance -->
+        <a-entity gltf-model="#temple_entrance" position="-30 10 5" scale="0.1 0.1 0.1" rotation="0 0 0"></a-entity>
+
+        <!-- Roman Temple -->
+        <a-entity gltf-model="#roman_temple_main" position="1.000 0 -45.007" scale="0.017 0.017 0.017" rotation="0 360 0"></a-entity>
+
+        <!-- Oasis Trading Post -->
+        <a-entity gltf-model="#oasis_trading_post" position="-45.058 6.540 -36.086" scale="17.894 17.894 17.894" rotation="0 134.529 0"></a-entity>
+
+        <!-- Aztec Style Temple Kit -->
+        <a-entity gltf-model="#aztec_style_temple_kit" position="26.793 1.627 54.707" scale="12.244 12.244 12.244" rotation="0 45 0"></a-entity>
 
         <!-- Groupe pyramide (positionné en -50 0 -7) et tourné de 90° autour de Y -->
         <a-entity id="pyramid-group" position="-50 0 -7" rotation="0 270 0">
@@ -117,6 +129,10 @@ button: trigger" hand-controls="hand: left"></a-entity>
             <a-asset-item id="chest_glb" src="../assets/modelAvatar/chest.glb"></a-asset-item>
             <a-asset-item id="tent" src="../assets/modelAvatar/Tent.glb"></a-asset-item>
             <a-asset-item id="camels_respite" src="../assets/modelAvatar/camels_respite.glb"></a-asset-item>
+            <a-asset-item id="temple_entrance" src="../assets/modelAvatar/temple_entrance.glb"></a-asset-item>
+            <a-asset-item id="roman_temple_main" src="../assets/modelAvatar/roman_temple.glb"></a-asset-item>
+            <a-asset-item id="oasis_trading_post" src="../assets/modelAvatar/oasis_trading_post.glb"></a-asset-item>
+            <a-asset-item id="aztec_style_temple_kit" src="../assets/modelAvatar/aztec_style_temple_kit.glb"></a-asset-item>
             <?php if ($modelAvatar): ?>
                 <a-asset-item id="avatar" src="../<?php echo htmlspecialchars($modelAvatar); ?>"></a-asset-item>
             <?php endif; ?>
