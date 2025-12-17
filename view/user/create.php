@@ -639,20 +639,8 @@
                     </div>
                 </section>
 
-                <div class="mt-8 flex items-center justify-between animate-slide-up" style="animation-delay: 1s">
-                    <a href="menu.php"
-                       class="group flex items-center gap-2 px-5 h-12 rounded-lg bg-surface-dark border border-white/10 text-text-sub font-display font-bold uppercase tracking-wider hover:text-white hover:border-primary/50 hover:bg-surface-light/50 transition-all duration-300">
-                        <span class="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
-                        <span>Annuler</span>
-                    </a>
-                    
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-2 px-4 py-2 bg-surface-dark/80 rounded-lg border border-white/10">
-                            <span class="text-xs text-text-sub">PRÉPARATION:</span>
-                            <div class="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-primary to-accent w-0" id="preparationBar"></div>
-                            </div>
-                        </div>
+              
+                
                         
                         <button type="submit"
                                 class="group relative flex items-center gap-3 px-8 h-12 rounded-lg bg-gradient-to-r from-accent via-cyber-purple to-cyber-blue text-white font-display font-bold text-sm tracking-wider uppercase shadow-neon-accent hover:shadow-[0_0_40px_rgba(217,70,239,0.8)] hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden">
