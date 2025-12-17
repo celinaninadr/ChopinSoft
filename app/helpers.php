@@ -1,6 +1,6 @@
 <?php
 
-function redirectTo(string $route, array $params = []): void
+function redirectTo(string $route, array $params = []): void // https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php
 {
     $url = '/ChopinSoft/index.php?route=' . urlencode($route);
     if (!empty($params)) {
@@ -10,22 +10,8 @@ function redirectTo(string $route, array $params = []): void
     exit;
 }
 
-function setFlash(string $msg): void
-{
-    $_SESSION['flash'] = $msg;
-}
+function render(string $view, array $data = []): void // https://stackoverflow.com/questions/14143865/render-a-view-in-php
 
-function getFlash(): ?string
-{
-    if (empty($_SESSION['flash'])) {
-        return null;
-    }
-    $msg = $_SESSION['flash'];
-    unset($_SESSION['flash']);
-    return $msg;
-}
-
-function render(string $view, array $data = []): void
 {
     extract($data);
 
@@ -36,10 +22,10 @@ function render(string $view, array $data = []): void
     require __DIR__ . '/../view/layouts/main.php';
 }
 
-function requireLogin(): void
+function requireLogin(): void // https://stackoverflow.com/questions/20812141/php-require-login-to-view
 {
     if (empty($_SESSION['user'])) {
-        setFlash('Connecte-toi.');
+        $_SESSION['flash'] = 'Connecte-toi.';
         redirectTo('user/login');
     }
 }
@@ -47,7 +33,7 @@ function requireLogin(): void
 function requireAdmin(): void
 {
     requireLogin();
-    if (($_SESSION['user']['userRole'] ?? '') !== 'ADMIN') {
+    if (($_SESSION['user']['userRole'] ?? '') !== 'ADMIN') { // https://stackoverflow.com/questions/16225796/cakephp-how-to-require-admin-role-for-a-specific-page
         http_response_code(403);
         echo '403';
         exit;

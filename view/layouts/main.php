@@ -48,7 +48,7 @@
     </nav>
   </header>
 
-  <?php $flash = getFlash(); if ($flash): ?>
+  <?php if (!empty($_SESSION['flash'])): $flash = $_SESSION['flash']; unset($_SESSION['flash']); ?>
     <div class="flash"><?php echo htmlspecialchars($flash); ?></div>
   <?php endif; ?>
 

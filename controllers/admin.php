@@ -12,12 +12,12 @@ function adminLogin(): void
 
         $u = userDbFindByUsername($username);
         if (!$u || !password_verify($password, $u['password'])) {
-            setFlash('Identifiants incorrects.');
+            $_SESSION['flash'] = 'Identifiants incorrects.';
             redirectTo('admin/login');
         }
 
         if ($u['userRole'] !== 'ADMIN') {
-            setFlash('Vous n\'êtes pas administrateur.');
+            $_SESSION['flash'] = 'Vous n\'êtes pas administrateur.';
             redirectTo('admin/login');
         }
 
@@ -48,20 +48,20 @@ function adminUsers(): void
             $idWorld = (int)($_POST['idWorld'] ?? 0);
 
             if ($username === '' || $password === '' || $idAvatar <= 0 || $idWorld <= 0) {
-                setFlash('Champs manquants pour créer l\'utilisateur.');
+                $_SESSION['flash'] = 'Champs manquants pour créer l\'utilisateur.';
                 redirectTo('admin/users');
             }
             if ($role !== 'ADMIN' && $role !== 'JOUEUR') {
                 $role = 'JOUEUR';
             }
             if (userDbFindByUsername($username)) {
-                setFlash('Username déjà utilisé.');
+                $_SESSION['flash'] = 'Username déjà utilisé.';
                 redirectTo('admin/users');
             }
 
             $hash = password_hash($password, PASSWORD_DEFAULT);
             adminDbUserCreate($username, $hash, $role, $idAvatar, $idWorld);
-            setFlash('Utilisateur créé.');
+            $_SESSION['flash'] = 'Utilisateur créé.';
             redirectTo('admin/users');
         }
 
@@ -74,7 +74,7 @@ function adminUsers(): void
             $newPassword = (string)($_POST['newPassword'] ?? '');
 
             if ($idUser <= 0 || $username === '' || $idAvatar <= 0 || $idWorld <= 0) {
-                setFlash('Champs manquants pour modifier l\'utilisateur.');
+                $_SESSION['flash'] = 'Champs manquants pour modifier l\'utilisateur.';
                 redirectTo('admin/users');
             }
             if ($role !== 'ADMIN' && $role !== 'JOUEUR') {
@@ -84,7 +84,7 @@ function adminUsers(): void
             // éviter collision username sur un autre user
             $existing = userDbFindByUsername($username);
             if ($existing && (int)$existing['idUser'] !== $idUser) {
-                setFlash('Username déjà utilisé par un autre utilisateur.');
+                $_SESSION['flash'] = 'Username déjà utilisé par un autre utilisateur.';
                 redirectTo('admin/users');
             }
 
@@ -94,7 +94,7 @@ function adminUsers(): void
                 adminDbUserUpdatePassword($idUser, $hash);
             }
 
-            setFlash('Utilisateur modifié.');
+            $_SESSION['flash'] = 'Utilisateur modifié.';
             redirectTo('admin/users');
         }
 
@@ -102,7 +102,7 @@ function adminUsers(): void
             $idUser = (int)($_POST['idUser'] ?? 0);
             if ($idUser > 0) {
                 adminDbUserDelete($idUser);
-                setFlash('Utilisateur supprimé.');
+                $_SESSION['flash'] = 'Utilisateur supprimé.';
             }
             redirectTo('admin/users');
         }
@@ -148,7 +148,7 @@ function adminWorlds(): void
             $id = (int)($_POST['idWorld'] ?? 0);
             if ($id > 0) {
                 if (worldIsUsed($id)) {
-                    setFlash('Impossible de supprimer ce monde : il est utilisé par un utilisateur.');
+                    $_SESSION['flash'] = 'Impossible de supprimer ce monde : il est utilisé par un utilisateur.';
                 } else {
                     worldDelete($id);
                 }
@@ -192,7 +192,7 @@ function adminAvatars(): void
             $id = (int)($_POST['idAvatar'] ?? 0);
             if ($id > 0) {
                 if (avatarIsUsed($id)) {
-                    setFlash('Impossible de supprimer cet avatar : il est utilisé par un utilisateur.');
+                    $_SESSION['flash'] = 'Impossible de supprimer cet avatar : il est utilisé par un utilisateur.';
                 } else {
                     avatarDelete($id);
                 }
