@@ -534,16 +534,7 @@
                                 </div>
                                 <p class="text-xs text-text-sub mt-1">Code d'accès sécurisé</p>
                             </div>
-                            <div class="mt-2 p-3 bg-black/30 rounded border border-white/10">
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="text-text-sub">Niveau de sécurité:</span>
-                                    <span class="text-primary font-display font-bold">MAXIMUM</span>
-                                </div>
-                                <div class="w-full bg-white/10 h-1.5 rounded-full mt-1.5 overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-primary to-accent w-full"></div>
-                                </div>
-                            </div>
-                        </div>
+    
                     </section>
 
                     <section class="flex flex-col animate-slide-up" style="animation-delay: 0.6s">
