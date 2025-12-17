@@ -17,7 +17,7 @@ function getDb(): PDO
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
         } catch (PDOException $e) {
-            error_log('Database connection error: ' . $e->getMessage());
+            error_log('Erreur de connexion à la base de données: ' . $e->getMessage());
             throw new Exception('Unable to connect to database');
         }
     }

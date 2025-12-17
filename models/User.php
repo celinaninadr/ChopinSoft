@@ -10,7 +10,7 @@ function userDbFindByUsername(string $username): ?array
         $u = $stmt->fetch();
         return $u ?: null;
     } catch (PDOException $e) {
-        error_log('Database error in userDbFindByUsername: ' . $e->getMessage());
+        error_log('Erreur base de données dans userDbFindByUsername: ' . $e->getMessage());
         return null;
     }
 }
@@ -24,7 +24,7 @@ function userDbFindById(int $idUser): ?array
         $u = $stmt->fetch();
         return $u ?: null;
     } catch (PDOException $e) {
-        error_log('Database error in userDbFindById: ' . $e->getMessage());
+        error_log('Erreur base de données dans userDbFindById: ' . $e->getMessage());
         return null;
     }
 }
@@ -42,7 +42,7 @@ function userDbCreate(string $username, string $hash, int $idAvatar, int $idWorl
         $stmt->execute();
         return (int)getDb()->lastInsertId();
     } catch (PDOException $e) {
-        error_log('Database error in userDbCreate: ' . $e->getMessage());
+        error_log('Erreur base de données dans userDbCreate: ' . $e->getMessage());
         return 0;
     }
 }
@@ -59,7 +59,7 @@ function adminDbUserCreate(string $username, string $hash, string $role, int $id
         $stmt->execute();
         return (int)getDb()->lastInsertId();
     } catch (PDOException $e) {
-        error_log('Database error in adminDbUserCreate: ' . $e->getMessage());
+        error_log('Erreur base de données dans adminDbUserCreate: ' . $e->getMessage());
         return 0;
     }
 }
@@ -72,7 +72,7 @@ function userDbUpdateWorld(int $idUser, int $idWorld): void
         $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in userDbUpdateWorld: ' . $e->getMessage());
+        error_log('Erreur base de données dans userDbUpdateWorld: ' . $e->getMessage());
     }
 }
 
@@ -84,7 +84,7 @@ function userDbUpdateAvatar(int $idUser, int $idAvatar): void
         $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in userDbUpdateAvatar: ' . $e->getMessage());
+        error_log('Erreur base de données dans userDbUpdateAvatar: ' . $e->getMessage());
     }
 }
 
@@ -99,7 +99,7 @@ function adminDbUserUpdate(int $idUser, string $username, string $role, int $idA
         $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in adminDbUserUpdate: ' . $e->getMessage());
+        error_log('Erreur base de données dans adminDbUserUpdate: ' . $e->getMessage());
     }
 }
 
@@ -111,7 +111,7 @@ function adminDbUserUpdatePassword(int $idUser, string $hash): void
         $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in adminDbUserUpdatePassword: ' . $e->getMessage());
+        error_log('Erreur base de données dans adminDbUserUpdatePassword: ' . $e->getMessage());
     }
 }
 
@@ -122,7 +122,7 @@ function adminDbUserDelete(int $idUser): void
         $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in adminDbUserDelete: ' . $e->getMessage());
+        error_log('Erreur base de données dans adminDbUserDelete: ' . $e->getMessage());
     }
 }
 
@@ -139,7 +139,7 @@ function userDbGetProfile(int $idUser): ?array
         $row = $stmt->fetch();
         return $row ?: null;
     } catch (PDOException $e) {
-        error_log('Database error in userDbGetProfile: ' . $e->getMessage());
+        error_log('Erreur base de données dans userDbGetProfile: ' . $e->getMessage());
         return null;
     }
 }
@@ -156,7 +156,7 @@ function adminDbUsersList(): array
         $stmt->execute();
         return $stmt->fetchAll();
     } catch (PDOException $e) {
-        error_log('Database error in adminDbUsersList: ' . $e->getMessage());
+        error_log('Erreur base de données dans adminDbUsersList: ' . $e->getMessage());
         return [];
     }
 }

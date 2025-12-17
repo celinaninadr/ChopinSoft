@@ -9,7 +9,7 @@ function worldAll(): array
         $stmt->execute();
         return $stmt->fetchAll();
     } catch (PDOException $e) {
-        error_log('Database error in worldAll: ' . $e->getMessage());
+        error_log('Erreur base de données dans worldAll: ' . $e->getMessage());
         return [];
     }
 }
@@ -24,7 +24,7 @@ function worldIsUsed(int $idWorld): bool
         $count = isset($row['cnt']) ? $row['cnt'] : 0;
         return (int)$count > 0;
     } catch (PDOException $e) {
-        error_log('Database error in worldIsUsed: ' . $e->getMessage());
+        error_log('Erreur base de données dans worldIsUsed: ' . $e->getMessage());
         return false;
     }
 }
@@ -38,7 +38,7 @@ function worldFind(int $idWorld): ?array
         $w = $stmt->fetch();
         return $w ?: null;
     } catch (PDOException $e) {
-        error_log('Database error in worldFind: ' . $e->getMessage());
+        error_log('Erreur base de données dans worldFind: ' . $e->getMessage());
         return null;
     }
 }
@@ -52,7 +52,7 @@ function worldCreate(string $name, ?string $img, string $url): void
         $stmt->bindParam(':urlWorld', $url, PDO::PARAM_STR);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in worldCreate: ' . $e->getMessage());
+        error_log('Erreur base de données dans worldCreate: ' . $e->getMessage());
     }
 }
 
@@ -66,7 +66,7 @@ function worldUpdate(int $id, string $name, ?string $img, string $url): void
         $stmt->bindParam(':idWorld', $id, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in worldUpdate: ' . $e->getMessage());
+        error_log('Erreur base de données dans worldUpdate: ' . $e->getMessage());
     }
 }
 
@@ -77,6 +77,6 @@ function worldDelete(int $id): void
         $stmt->bindParam(':idWorld', $id, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in worldDelete: ' . $e->getMessage());
+        error_log('Erreur base de données dans worldDelete: ' . $e->getMessage());
     }
 }

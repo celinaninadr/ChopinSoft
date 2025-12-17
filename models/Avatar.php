@@ -9,7 +9,7 @@ function avatarAll(): array
         $stmt->execute();
         return $stmt->fetchAll();
     } catch (PDOException $e) {
-        error_log('Database error in avatarAll: ' . $e->getMessage());
+        error_log('Erreur base de données dans avatarAll: ' . $e->getMessage());
         return [];
     }
 }
@@ -24,7 +24,7 @@ function avatarIsUsed(int $idAvatar): bool
         $count = isset($row['cnt']) ? $row['cnt'] : 0;
         return (int)$count > 0;
     } catch (PDOException $e) {
-        error_log('Database error in avatarIsUsed: ' . $e->getMessage());
+        error_log('Erreur base de données dans avatarIsUsed: ' . $e->getMessage());
         return false;
     }
 }
@@ -38,7 +38,7 @@ function avatarFind(int $idAvatar): ?array
         $a = $stmt->fetch();
         return $a ?: null;
     } catch (PDOException $e) {
-        error_log('Database error in avatarFind: ' . $e->getMessage());
+        error_log('Erreur base de données dans avatarFind: ' . $e->getMessage());
         return null;
     }
 }
@@ -52,7 +52,7 @@ function avatarCreate(string $name, string $model, ?string $img): void
         $stmt->bindParam(':imgAvatar', $img, PDO::PARAM_STR);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in avatarCreate: ' . $e->getMessage());
+        error_log('Erreur base de données dans avatarCreate: ' . $e->getMessage());
     }
 }
 
@@ -66,7 +66,7 @@ function avatarUpdate(int $id, string $name, string $model, ?string $img): void
         $stmt->bindParam(':idAvatar', $id, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in avatarUpdate: ' . $e->getMessage());
+        error_log('Erreur base de données dans avatarUpdate: ' . $e->getMessage());
     }
 }
 
@@ -77,6 +77,6 @@ function avatarDelete(int $id): void
         $stmt->bindParam(':idAvatar', $id, PDO::PARAM_INT);
         $stmt->execute();
     } catch (PDOException $e) {
-        error_log('Database error in avatarDelete: ' . $e->getMessage());
+        error_log('Erreur base de données dans avatarDelete: ' . $e->getMessage());
     }
 }
