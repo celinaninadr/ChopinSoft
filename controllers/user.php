@@ -156,7 +156,14 @@ function userPlay(): void
     }
 
     // Lance le monde (portail)
-    $url = $w['urlWorld'];
+    switch ($w['nameWorld']) {
+        case 'desert':
+            $url = 'worlds/desert.php';
+            break;
+        default:
+            $_SESSION['flash'] = 'Monde non disponible.';
+            redirectTo('user/profile');
+    }
     $sep = (strpos($url, '?') === false) ? '?' : '&';
 
     // paramètres simples (si le portail les exploite)
