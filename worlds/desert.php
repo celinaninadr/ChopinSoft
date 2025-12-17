@@ -53,17 +53,17 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         <a-entity gltf-model="#pyramid" position="35 -10 -7" scale="8 8 8" rotation="0 133 0"> </a-entity>
         <a-entity gltf-model="#sarcophagus" position="-10 0 0" scale="2 2 2" rotation="0 0 0"> </a-entity>
         <a-assets>
-            <a-asset-item id="sphynx" src="./assets/sphynx.glb"></a-asset-item>
-            <a-asset-item id="chest" src="./assets/free_animated_low_poly_cartoon_chest_kit.glb"></a-asset-item>
-            <a-asset-item id="camel" src="./assets/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
-            <a-asset-item id="anubis" src="./assets/Anubis Statue.glb"></a-asset-item>
-            <a-asset-item id="arch" src="./assets/Arch.glb"></a-asset-item>
-            <a-asset-item id="fence" src="./assets/Fence Pillar.glb"></a-asset-item>
-            <a-asset-item id="coin" src="./assets/lowpoly_gold_coin.glb"></a-asset-item>
-            <a-asset-item id="pyramid" src="./assets/Pyramid.glb"></a-asset-item>
-            <a-asset-item id="sarcophagus" src="./assets/stone_sarcophagi_cairo_museum.glb"></a-asset-item>
+            <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
+            <a-asset-item id="chest" src="../assets/modelAvatar/free_animated_low_poly_cartoon_chest_kit.glb"></a-asset-item>
+            <a-asset-item id="camel" src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
+            <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
+            <a-asset-item id="arch" src="../assets/modelAvatar/Arch.glb"></a-asset-item>
+            <a-asset-item id="fence" src="../assets/modelAvatar/Fence Pillar.glb"></a-asset-item>
+            <a-asset-item id="coin" src="../assets/modelAvatar/lowpoly_gold_coin.glb"></a-asset-item>
+            <a-asset-item id="pyramid" src="../assets/modelAvatar/Pyramid.glb"></a-asset-item>
+            <a-asset-item id="sarcophagus" src="../assets/modelAvatar/stone_sarcophagi_cairo_museum.glb"></a-asset-item>
             <?php if ($modelAvatar): ?>
-            <a-asset-item id="avatar" src="<?php echo htmlspecialchars($modelAvatar); ?>"></a-asset-item>
+            <a-asset-item id="avatar" src="../<?php echo htmlspecialchars($modelAvatar); ?>"></a-asset-item>
             <?php endif; ?>
         </a-assets>
 </body>
