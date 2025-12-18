@@ -10,7 +10,7 @@
 
     <script>
         /**
-         * Composant de téléportation custom compatible A-Frame 1.6.0
+         * Composant de téléportation custom compatible A-Frame 1.6.0 et Oculus Rift CV1
          */
         AFRAME.registerComponent('teleport-controls-custom', {
             schema: {
@@ -36,8 +36,15 @@
                 this.createCurveLine();
                 this.createHitMarker();
 
-                this.el.addEventListener(this.data.button + 'down', this.onButtonDown.bind(this));
-                this.el.addEventListener(this.data.button + 'up', this.onButtonUp.bind(this));
+                // Événements pour Oculus Touch
+                this.el.addEventListener('triggerdown', this.onButtonDown.bind(this));
+                this.el.addEventListener('triggerup', this.onButtonUp.bind(this));
+                
+                // Événements WebXR génériques
+                this.el.addEventListener('selectstart', this.onButtonDown.bind(this));
+                this.el.addEventListener('selectend', this.onButtonUp.bind(this));
+                
+                console.log('Teleport controls initialized');
             },
 
             createCurveLine: function () {
@@ -396,12 +403,12 @@
         });
 
         /**
-         * Composant grab-controls - permet d'attraper des objets avec les manettes
+         * Composant grab-controls pour Oculus Rift CV1
+         * Bouton: GRIP (bouton latéral) pour attraper
          */
         AFRAME.registerComponent('grab-controls', {
             schema: {
                 hand: { type: 'string', default: 'right' },
-                grabButton: { type: 'string', default: 'grip' },
                 grabDistance: { type: 'number', default: 3 }
             },
 
@@ -410,70 +417,136 @@
                 this.raycaster = new THREE.Raycaster();
                 this.raycaster.far = this.data.grabDistance;
                 this.hoveredObject = null;
+                this.isGrabbing = false;
+                this.controllerConnected = false;
                 
-                // Créer le laser
+                // Créer le laser visuel
                 this.createLaser();
                 
-                // Écouter les événements du contrôleur
-                this.el.addEventListener(this.data.grabButton + 'down', this.onGrabStart.bind(this));
-                this.el.addEventListener(this.data.grabButton + 'up', this.onGrabEnd.bind(this));
+                // Attendre que le contrôleur soit connecté
+                this.el.addEventListener('controllerconnected', (e) => {
+                    console.log('Controller connected:', e.detail.name);
+                    this.controllerConnected = true;
+                    this.setupControllerEvents();
+                });
+                
+                // Setup immédiat au cas où
+                this.setupControllerEvents();
+                
+                console.log('Grab controls init for', this.data.hand);
+            },
+            
+            setupControllerEvents: function() {
+                // Événements Oculus Touch pour GRIP
+                this.el.addEventListener('gripdown', this.onGrabStart.bind(this));
+                this.el.addEventListener('gripup', this.onGrabEnd.bind(this));
+                
+                // Alternative: utiliser trigger si grip ne marche pas
+                // this.el.addEventListener('triggerdown', this.onGrabStart.bind(this));
+                // this.el.addEventListener('triggerup', this.onGrabEnd.bind(this));
+                
+                // Événements génériques WebXR
+                this.el.addEventListener('selectstart', this.onGrabStart.bind(this));
+                this.el.addEventListener('selectend', this.onGrabEnd.bind(this));
+                this.el.addEventListener('squeezestart', this.onGrabStart.bind(this));
+                this.el.addEventListener('squeezeend', this.onGrabEnd.bind(this));
             },
 
             createLaser: function () {
-                this.laser = document.createElement('a-entity');
-                this.laser.setAttribute('line', {
-                    start: '0 0 0',
-                    end: '0 0 -' + this.data.grabDistance,
-                    color: '#ffffff',
-                    opacity: 0.5
-                });
-                this.el.appendChild(this.laser);
+                // Conteneur pour le laser
+                this.laserContainer = document.createElement('a-entity');
                 
-                // Point au bout du laser
-                this.laserHitPoint = document.createElement('a-sphere');
-                this.laserHitPoint.setAttribute('radius', '0.02');
-                this.laserHitPoint.setAttribute('color', '#ffffff');
-                this.laserHitPoint.setAttribute('position', '0 0 -' + this.data.grabDistance);
-                this.el.appendChild(this.laserHitPoint);
+                // Ligne du laser
+                const laserLine = document.createElement('a-entity');
+                laserLine.setAttribute('geometry', {
+                    primitive: 'cylinder',
+                    radius: 0.002,
+                    height: this.data.grabDistance,
+                    segmentsRadial: 6
+                });
+                laserLine.setAttribute('material', {
+                    color: '#00aaff',
+                    opacity: 0.6,
+                    transparent: true
+                });
+                laserLine.setAttribute('position', '0 0 -' + (this.data.grabDistance / 2));
+                laserLine.setAttribute('rotation', '90 0 0');
+                laserLine.className = 'laser-line';
+                this.laserContainer.appendChild(laserLine);
+                this.laserLine = laserLine;
+                
+                // Point de visée
+                const hitPoint = document.createElement('a-sphere');
+                hitPoint.setAttribute('radius', '0.02');
+                hitPoint.setAttribute('color', '#00aaff');
+                hitPoint.setAttribute('position', '0 0 -' + this.data.grabDistance);
+                hitPoint.className = 'laser-hit';
+                this.laserContainer.appendChild(hitPoint);
+                this.laserHitPoint = hitPoint;
+                
+                this.el.appendChild(this.laserContainer);
+            },
+            
+            updateLaser: function(distance, isHovering) {
+                const color = isHovering ? '#00ff00' : '#00aaff';
+                const dist = distance || this.data.grabDistance;
+                
+                this.laserLine.setAttribute('geometry', 'height', dist);
+                this.laserLine.setAttribute('position', '0 0 -' + (dist / 2));
+                this.laserLine.setAttribute('material', 'color', color);
+                this.laserHitPoint.setAttribute('position', '0 0 -' + dist);
+                this.laserHitPoint.setAttribute('color', color);
             },
 
-            onGrabStart: function () {
+            onGrabStart: function (evt) {
+                if (this.isGrabbing) return;
+                
+                console.log('GRAB START:', evt.type, 'hovering:', !!this.hoveredObject);
+                
                 if (this.hoveredObject) {
                     const grabbable = this.hoveredObject.components.grabbable;
-                    if (grabbable) {
+                    if (grabbable && !grabbable.isGrabbed) {
                         grabbable.grab(this.el);
                         this.grabbedObject = this.hoveredObject;
-                        this.laser.setAttribute('visible', false);
-                        this.laserHitPoint.setAttribute('visible', false);
+                        this.isGrabbing = true;
+                        this.laserContainer.setAttribute('visible', false);
+                        console.log('Object grabbed!');
                     }
                 }
             },
 
-            onGrabEnd: function () {
+            onGrabEnd: function (evt) {
+                if (!this.isGrabbing) return;
+                
+                console.log('GRAB END:', evt.type);
+                
                 if (this.grabbedObject) {
                     const grabbable = this.grabbedObject.components.grabbable;
                     if (grabbable) {
                         grabbable.release();
                     }
                     this.grabbedObject = null;
-                    this.laser.setAttribute('visible', true);
-                    this.laserHitPoint.setAttribute('visible', true);
                 }
+                
+                this.isGrabbing = false;
+                this.laserContainer.setAttribute('visible', true);
             },
 
             tick: function () {
-                if (this.grabbedObject) return;
+                if (this.isGrabbing) return;
                 
                 // Position et direction du contrôleur
                 const controllerPos = new THREE.Vector3();
                 const controllerDir = new THREE.Vector3(0, 0, -1);
                 
                 this.el.object3D.getWorldPosition(controllerPos);
-                controllerDir.applyQuaternion(this.el.object3D.quaternion);
+                const quaternion = new THREE.Quaternion();
+                this.el.object3D.getWorldQuaternion(quaternion);
+                controllerDir.applyQuaternion(quaternion);
                 
                 this.raycaster.set(controllerPos, controllerDir.normalize());
                 
-                // Trouver les objets grabbable
+                // Chercher les objets grabbable
                 const grabbables = document.querySelectorAll('[grabbable]');
                 let closestHit = null;
                 let closestDist = Infinity;
@@ -485,28 +558,17 @@
                     const intersects = this.raycaster.intersectObject(mesh, true);
                     if (intersects.length > 0 && intersects[0].distance < closestDist) {
                         closestDist = intersects[0].distance;
-                        closestHit = { entity: entity, point: intersects[0].point };
+                        closestHit = { entity: entity, distance: closestDist };
                     }
                 });
                 
-                // Mettre à jour le laser et l'objet survolé
-                if (closestHit) {
+                // Mettre à jour
+                if (closestHit && closestHit.distance <= this.data.grabDistance) {
                     this.hoveredObject = closestHit.entity;
-                    this.laser.setAttribute('line', 'color', '#00ff00');
-                    this.laserHitPoint.setAttribute('color', '#00ff00');
-                    
-                    // Mettre à jour la longueur du laser
-                    this.laser.setAttribute('line', 'end', '0 0 -' + closestDist);
-                    this.laserHitPoint.setAttribute('position', '0 0 -' + closestDist);
+                    this.updateLaser(closestHit.distance, true);
                 } else {
-                    if (this.hoveredObject) {
-                        this.hoveredObject.emit('unhovered');
-                    }
                     this.hoveredObject = null;
-                    this.laser.setAttribute('line', 'color', '#ffffff');
-                    this.laserHitPoint.setAttribute('color', '#ffffff');
-                    this.laser.setAttribute('line', 'end', '0 0 -' + this.data.grabDistance);
-                    this.laserHitPoint.setAttribute('position', '0 0 -' + this.data.grabDistance);
+                    this.updateLaser(this.data.grabDistance, false);
                 }
             }
         });
@@ -773,19 +835,19 @@
         <a-entity gltf-model="#trap_door" position="2.388 0.033 4.821" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#trap_door" position="2.388 0.247 -25.346" scale="1 1 1" rotation="0 90 0"></a-entity>
 
-        <!-- Rig VR avec caméra et contrôleurs (UN SEUL) -->
+        <!-- Rig VR pour Oculus Quest 1 -->
         <a-entity id="rig" position="-18 0 -9">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
 
-            <!-- Main droite avec GRAB -->
-            <a-entity id="rhand" 
-                oculus-touch-controls="hand: right"
-                grab-controls="hand: right; grabButton: grip; grabDistance: 3">
+            <!-- Main droite avec GRAB - Quest Touch Controller -->
+            <a-entity id="rhand"
+                oculus-touch-controls="hand: right; model: true"
+                grab-controls="hand: right; grabDistance: 3">
             </a-entity>
 
-            <!-- Main gauche avec téléportation -->
-            <a-entity id="lhand" 
-                oculus-touch-controls="hand: left"
+            <!-- Main gauche avec téléportation - Quest Touch Controller -->
+            <a-entity id="lhand"
+                oculus-touch-controls="hand: left; model: true"
                 teleport-controls-custom="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleportable; button: trigger; curveShootingSpeed: 15">
             </a-entity>
         </a-entity>
