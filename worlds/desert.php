@@ -73,11 +73,10 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: false"></a-camera>
 
             <!-- Main droite -->
-            <a-entity id="rhand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc">
-            </a-entity>
+            <a-entity id="rhand" laser-controls="hand: right"></a-entity>
 
             <!-- Main gauche avec téléportation -->
-            <a-entity id="lhand" hand-controls="hand: left; handModelStyle: lowPoly; color: #ccccff"
+            <a-entity id="lhand" laser-controls="hand: left"
                 teleport-controls="cameraRig: #rig; teleportOrigin: #camera; button: trigger; curveShootingSpeed: 15; landingMaxAngle: 90; collisionEntities: .teleportable; type: parabolic">
             </a-entity>
         </a-entity>
@@ -86,6 +85,9 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         <a-entity gltf-model="#tent" position="-17.268 2.448 -9.3" scale="2.5105 2.5105 2.5105"
             rotation="0 180 0"></a-entity>
 
+        <!-- Stone Pickaxe -->
+        <a-entity gltf-model="#stone_pickaxe" position="-55 0.5 -4" scale="0.5 0.5 0.5" rotation="0 0 0"></a-entity>
+
 
         <!-- Roman Temple -->
         <a-entity gltf-model="#roman_temple_main" position="1.000 0 -45.007" scale="0.0085 0.0085 0.0085"
@@ -93,8 +95,6 @@ $idAvatar = $_GET['idAvatar'] ?? '';
 
         <a-assets>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
-            <a-asset-item id="chest"
-                src="../assets/modelAvatar/free_animated_low_poly_cartoon_chest_kit.glb"></a-asset-item>
             <a-asset-item id="camel"
                 src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
             <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
@@ -104,15 +104,10 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             <a-asset-item id="pyramid" src="../assets/modelAvatar/Pyramid.glb"></a-asset-item>
             <a-asset-item id="sarcophagus" src="../assets/modelAvatar/stone_sarcophagi_cairo_museum.glb"></a-asset-item>
             <a-asset-item id="roman_temple" src="../assets/modelAvatar/low_poly_roman_temple_wip.glb"></a-asset-item>
-            <a-asset-item id="piramid" src="../assets/modelAvatar/piramid.glb"></a-asset-item>
             <a-asset-item id="chest_glb" src="../assets/modelAvatar/chest.glb"></a-asset-item>
             <a-asset-item id="tent" src="../assets/modelAvatar/Tent.glb"></a-asset-item>
-            <a-asset-item id="camels_respite" src="../assets/modelAvatar/camels_respite.glb"></a-asset-item>
-            <a-asset-item id="temple_entrance" src="../assets/modelAvatar/temple_entrance.glb"></a-asset-item>
             <a-asset-item id="roman_temple_main" src="../assets/modelAvatar/roman_temple.glb"></a-asset-item>
-            <a-asset-item id="oasis_trading_post" src="../assets/modelAvatar/oasis_trading_post.glb"></a-asset-item>
-            <a-asset-item id="aztec_style_temple_kit"
-                src="../assets/modelAvatar/aztec_style_temple_kit.glb"></a-asset-item>
+            <a-asset-item id="stone_pickaxe" src="../assets/modelAvatar/Stone Pickaxe.glb"></a-asset-item>
             <?php if ($modelAvatar): ?>
                 <a-asset-item id="avatar" src="../<?php echo htmlspecialchars($modelAvatar); ?>"></a-asset-item>
             <?php endif; ?>
