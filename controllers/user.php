@@ -122,8 +122,12 @@ function userChangeWorld(): void
 
     $idWorld = (int)($_POST['idWorld'] ?? 0);
     if ($idWorld > 0) {
-        userDbUpdateWorld((int)$_SESSION['user']['idUser'], $idWorld);
+        $userId = (int)$_SESSION['user']['idUser'];
+        userDbUpdateWorld($userId, $idWorld);
         $_SESSION['play']['idWorld'] = $idWorld;
+        $_SESSION['flash'] = 'Monde mis à jour avec succès !';
+    } else {
+        $_SESSION['flash'] = 'Erreur : Monde non valide.';
     }
 
     redirectTo('user/profile');
@@ -137,6 +141,9 @@ function userChangeAvatar(): void
     if ($idAvatar > 0) {
         userDbUpdateAvatar((int)$_SESSION['user']['idUser'], $idAvatar);
         $_SESSION['play']['idAvatar'] = $idAvatar;
+        $_SESSION['flash'] = 'Avatar mis à jour avec succès !';
+    } else {
+        $_SESSION['flash'] = 'Erreur : Avatar non valide.';
     }
 
     redirectTo('user/profile');

@@ -129,7 +129,7 @@ function adminDbUserDelete(int $idUser): void
 function userDbGetProfile(int $idUser): ?array
 {
     try {
-        $sql = "SELECT u.idUser, u.username, u.userRole, u.idWorld, a.idAvatar, a.nameAvatar, a.modelAvatar, a.imgAvatar
+        $sql = "SELECT u.idUser, u.username, u.userRole, u.idWorld, u.idAvatar, a.nameAvatar, a.modelAvatar, a.imgAvatar
                 FROM `user` u
                 LEFT JOIN avatar a ON a.idAvatar = u.idAvatar
                 WHERE u.idUser = :idUser";
