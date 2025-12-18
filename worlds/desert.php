@@ -57,8 +57,7 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         <a-entity gltf-model="#fence" position="-4 0 -7" scale="1.5 1.5 1.5" rotation="0 0 0"> </a-entity>
         <a-entity gltf-model="#coin" position="2 0 2" scale="0.25 0.25 0.25" rotation="0 0 0"> </a-entity>
 
-        <a-entity gltf-model="#pyramid" position="35 -10 -7" scale="8 8 8" rotation="0 133 0"> </a-entity>
-        <a-entity gltf-model="#roman_temple" position="-15 5 23" scale="7.5 7.5 7.5" rotation="0 180 0"> </a-entity>
+        <a-entity gltf-model="#roman_temple" position="-15 2.6 23" scale="7.5 7.5 7.5" rotation="0 180 0"> </a-entity>
         <a-entity gltf-model="#roman_temple" position="-28 5 23" scale="7.5 7.5 7.5" rotation="0 180 0"> </a-entity>
         <a-entity gltf-model="#roman_temple" position="-15 5 -40" scale="7.5 7.5 7.5" rotation="0 360 0"> </a-entity>
         <a-entity gltf-model="#roman_temple" position="-28 5 -40" scale="7.5 7.5 7.5" rotation="0 360 0"> </a-entity>
@@ -85,16 +84,10 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         <a-entity gltf-model="#tent" position="-17.268 2.448 -9.3" scale="2.5105 2.5105 2.5105"
             rotation="0 180 0"></a-entity>
 
-        <!-- Temple Entrance -->
-        <a-entity gltf-model="#temple_entrance" position="-30 10 5" scale="0.05 0.05 0.05" rotation="0 0 0"></a-entity>
 
         <!-- Roman Temple -->
         <a-entity gltf-model="#roman_temple_main" position="1.000 0 -45.007" scale="0.0085 0.0085 0.0085"
             rotation="0 360 0"></a-entity>
-
-        <!-- Modèle GLB (aligné au groupe) -->
-        <a-entity gltf-model="#piramid" position="0 1 0" scale="4 4 4" rotation="0 0 0"></a-entity>
-        </a-entity>
 
         <a-assets>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
