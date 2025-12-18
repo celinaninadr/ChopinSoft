@@ -438,7 +438,7 @@
         <a-entity gltf-model="#chest_glb" position="38.821 0.943 -4" scale="0.300 0.300 0.300" rotation="0 -90.873 0"></a-entity>
 
         <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #c9a66b; horizonColor: #b89968;"></a-entity>
-        
+         
         <a-entity light="type:ambient;intensity:0.7;color:#f4d4a8"></a-entity>
         <a-entity light="type:directional;intensity:0.4;color:#e6c288" position="1 1 0"></a-entity>
 
