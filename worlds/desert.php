@@ -79,8 +79,24 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             rotation="0 180 0"></a-entity>
 
         <!-- Camels Respite -->
+<<<<<<< HEAD
         <a-entity gltf-model="#camels_respite" position="-54.908 0.266 32.358" scale="0.25 0.25 0.25"
             rotation="0.000 135.204 0.000"></a-entity>
+=======
+        <a-entity gltf-model="#camels_respite" position="-54.908 0.266 32.358" scale="0.5 0.5 0.5" rotation="0.000 135.204 0.000"></a-entity>
+
+        <!-- Temple Entrance -->
+        <a-entity gltf-model="#temple_entrance" position="-30 10 5" scale="0.1 0.1 0.1" rotation="0 0 0"></a-entity>
+
+        <!-- Roman Temple -->
+        <a-entity gltf-model="#roman_temple_main" position="1.000 0 -45.007" scale="0.017 0.017 0.017" rotation="0 360 0"></a-entity>
+
+        <!-- Oasis Trading Post -->
+        <a-entity gltf-model="#oasis_trading_post" position="-45.058 6.540 -36.086" scale="17.894 17.894 17.894" rotation="0 134.529 0"></a-entity>
+
+        <!-- Aztec Style Temple Kit -->
+        <a-entity gltf-model="#aztec_style_temple_kit" position="26.793 1.627 54.707" scale="12.244 12.244 12.244" rotation="0 45 0"></a-entity>
+>>>>>>> 25674d7752907d8e03e1b1336c80707349b8ce27
 
         <!-- Temple Entrance -->
         <a-entity gltf-model="#temple_entrance" position="-30 10 5" scale="0.05 0.05 0.05" rotation="0 0 0"></a-entity>
@@ -121,8 +137,12 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             <a-asset-item id="temple_entrance" src="../assets/modelAvatar/temple_entrance.glb"></a-asset-item>
             <a-asset-item id="roman_temple_main" src="../assets/modelAvatar/roman_temple.glb"></a-asset-item>
             <a-asset-item id="oasis_trading_post" src="../assets/modelAvatar/oasis_trading_post.glb"></a-asset-item>
+<<<<<<< HEAD
             <a-asset-item id="aztec_style_temple_kit"
                 src="../assets/modelAvatar/aztec_style_temple_kit.glb"></a-asset-item>
+=======
+            <a-asset-item id="aztec_style_temple_kit" src="../assets/modelAvatar/aztec_style_temple_kit.glb"></a-asset-item>
+>>>>>>> 25674d7752907d8e03e1b1336c80707349b8ce27
             <?php if ($modelAvatar): ?>
                 <a-asset-item id="avatar" src="../<?php echo htmlspecialchars($modelAvatar); ?>"></a-asset-item>
             <?php endif; ?>
