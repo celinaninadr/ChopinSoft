@@ -818,34 +818,6 @@
         <a-entity gltf-model="#normal_wall" position="24.173 -0.928 -48.136 " scale="8.105 1 1" rotation="0 -89.671 0"></a-entity>
 
 
-        <a-assets>
-            <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
-            <a-asset-item id="camel"
-                src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
-            <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
-            <a-asset-item id="arch" src="../assets/modelAvatar/Arch.glb"></a-asset-item>
-            <a-asset-item id="fence" src="../assets/modelAvatar/Fence Pillar.glb"></a-asset-item>
-            <a-asset-item id="coin" src="../assets/modelAvatar/lowpoly_gold_coin.glb"></a-asset-item>
-            <a-asset-item id="pyramid" src="../assets/modelAvatar/Pyramid.glb"></a-asset-item>
-            <a-asset-item id="sarcophagus" src="../assets/modelAvatar/stone_sarcophagi_cairo_museum.glb"></a-asset-item>
-            <a-asset-item id="roman_temple" src="../assets/modelAvatar/low_poly_roman_temple_wip.glb"></a-asset-item>
-            <a-asset-item id="chest_glb" src="../assets/modelAvatar/chest.glb"></a-asset-item>
-            <a-asset-item id="tent" src="../assets/modelAvatar/Tent.glb"></a-asset-item>
-            <a-asset-item id="roman_temple_main" src="../assets/modelAvatar/roman_temple.glb"></a-asset-item>
-            <a-asset-item id="stone_pickaxe" src="../assets/modelAvatar/Stone Pickaxe.glb"></a-asset-item>
-            <a-asset-item id="mayan_ziggurat" src="../assets/modelAvatar/Mayan Ziggurat.glb"></a-asset-item>
-            <a-asset-item id="pyramids" src="../assets/modelAvatar/Pyramids.glb"></a-asset-item>
-            <a-asset-item id="chest_gold" src="../assets/modelAvatar/Chest Gold.glb"></a-asset-item>
-            <a-asset-item id="coffin" src="../assets/modelAvatar/Coffin.glb"></a-asset-item>
-            <a-asset-item id="bear_trap" src="../assets/modelAvatar/Bear Trap.glb"></a-asset-item>
-            <a-asset-item id="chest_1" src="../assets/modelAvatar/Chest (1).glb"></a-asset-item>
-            <a-asset-item id="torture_device" src="../assets/modelAvatar/Torture Device.glb"></a-asset-item>
-            <a-asset-item id="spade" src="../assets/modelAvatar/Spade.glb"></a-asset-item>
-            <a-asset-item id="trap_door" src="../assets/modelAvatar/Trap Door.glb"></a-asset-item>
-            <a-asset-item id="eye_of_horus" src="../assets/modelAvatar/eye_of_horus_educational.glb"></a-asset-item>
-            <a-asset-item id="normal_wall" src="../assets/modelAvatar/Normal Wall.glb"></a-asset-item>
-        </a-assets>
-
         <!-- Sol invisible pour téléportation -->
         <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false"
             material="opacity: 0"></a-plane>
@@ -935,8 +907,6 @@
         <a-entity gltf-model="#stone_pickaxe" position="4.966 0.5 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425" grabbable></a-entity>
         <a-entity gltf-model="#stone_pickaxe" position="3.090 0.5 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000" grabbable></a-entity>
 
-        <!-- Mayan Ziggurat -->
-            rotation="0 0 0"></a-entity>
 
 
         <!-- Cercueils -->
