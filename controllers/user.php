@@ -16,7 +16,7 @@ function userCreate(): void
         $idAvatar = (int)($_POST['idAvatar'] ?? 0);
 
         if ($username === '' || $password === '') {
-            setFlash('Username et password obligatoires.');
+            $_SESSION['flash'] = 'Username et password obligatoires.';
             redirectTo('user/create');
         }
 
@@ -27,16 +27,16 @@ function userCreate(): void
                 'username' => $existing['username'],
                 'userRole' => $existing['userRole'],
             ];
-            setFlash('Vous avez déjà un compte.');
+            $_SESSION['flash'] = 'Vous avez déjà un compte.';
             redirectTo('user/profile');
         }
 
         if ($idWorld <= 0) {
-            setFlash('Choisis un monde.');
+            $_SESSION['flash'] = 'Choisis un monde.';
             redirectTo('user/create');
         }
         if ($idAvatar <= 0) {
-            setFlash('Choisis un avatar.');
+            $_SESSION['flash'] = 'Choisis un avatar.';
             redirectTo('user/create');
         }
 
@@ -72,12 +72,12 @@ function userLogin(): void
 
         $u = userDbFindByUsername($username);
         if (!$u || !password_verify($password, $u['password'])) {
-            setFlash('Identifiants incorrects.');
+            $_SESSION['flash'] = 'Identifiants incorrects.';
             redirectTo('user/login');
         }
 
         if ($u['userRole'] === 'ADMIN') {
-            setFlash('Utilise le bouton "Login administrateur".');
+            $_SESSION['flash'] = 'Utilise le bouton "Login administrateur".';
             redirectTo('user/login');
         }
 
@@ -151,12 +151,19 @@ function userPlay(): void
     $a = $idAvatar > 0 ? avatarFind($idAvatar) : null;
 
     if (!$w || !$a) {
-        setFlash('Choisis un monde et un avatar.');
+        $_SESSION['flash'] = 'Choisis un monde et un avatar.';
         redirectTo('user/profile');
     }
 
     // Lance le monde (portail)
-    $url = $w['urlWorld'];
+    switch ($w['nameWorld']) {
+        case 'desert':
+            $url = 'worlds/desert.php';
+            break;
+        default:
+            $_SESSION['flash'] = 'Monde non disponible.';
+            redirectTo('user/profile');
+    }
     $sep = (strpos($url, '?') === false) ? '?' : '&';
 
     // paramètres simples (si le portail les exploite)
