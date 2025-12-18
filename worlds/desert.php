@@ -24,7 +24,8 @@ $idAvatar = $_GET['idAvatar'] ?? '';
     <title>Environnement désert</title>
     <meta name="description" content="Environnement desert" />
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
 
     <script>
         /**
@@ -50,10 +51,10 @@ $idAvatar = $_GET['idAvatar'] ?? '';
                 this.raycaster = new THREE.Raycaster();
                 this.direction = new THREE.Vector3();
                 this.gravity = new THREE.Vector3(0, -9.8, 0);
-                
+
                 this.createCurveLine();
                 this.createHitMarker();
-                
+
                 this.el.addEventListener(this.data.button + 'down', this.onButtonDown.bind(this));
                 this.el.addEventListener(this.data.button + 'up', this.onButtonUp.bind(this));
             },
@@ -62,12 +63,12 @@ $idAvatar = $_GET['idAvatar'] ?? '';
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(this.data.curveNumberPoints * 3);
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                
+
                 const material = new THREE.LineBasicMaterial({
                     color: this.data.curveMissColor,
                     linewidth: 2
                 });
-                
+
                 this.curveLine = new THREE.Line(geometry, material);
                 this.curveLine.visible = false;
                 this.curveLine.frustumCulled = false;
@@ -76,21 +77,21 @@ $idAvatar = $_GET['idAvatar'] ?? '';
 
             createHitMarker: function () {
                 this.hitMarker = document.createElement('a-entity');
-                
+
                 const ring = document.createElement('a-ring');
                 ring.setAttribute('color', this.data.curveHitColor);
                 ring.setAttribute('radius-inner', '0.4');
                 ring.setAttribute('radius-outer', '0.5');
                 ring.setAttribute('rotation', '-90 0 0');
                 this.hitMarker.appendChild(ring);
-                
+
                 const circle = document.createElement('a-circle');
                 circle.setAttribute('color', this.data.curveHitColor);
                 circle.setAttribute('radius', '0.2');
                 circle.setAttribute('rotation', '-90 0 0');
                 circle.setAttribute('opacity', '0.5');
                 this.hitMarker.appendChild(circle);
-                
+
                 this.hitMarker.setAttribute('visible', 'false');
                 this.el.sceneEl.appendChild(this.hitMarker);
             },
@@ -112,10 +113,10 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             teleport: function () {
                 const rig = this.data.cameraRig;
                 if (!rig) return;
-                
+
                 const camera = this.data.teleportOrigin;
                 let cameraOffset = new THREE.Vector3();
-                
+
                 if (camera) {
                     camera.object3D.getWorldPosition(cameraOffset);
                     const rigPos = new THREE.Vector3();
@@ -123,7 +124,7 @@ $idAvatar = $_GET['idAvatar'] ?? '';
                     cameraOffset.sub(rigPos);
                     cameraOffset.y = 0;
                 }
-                
+
                 rig.object3D.position.x = this.hitPoint.x - cameraOffset.x;
                 rig.object3D.position.z = this.hitPoint.z - cameraOffset.z;
             },
@@ -137,59 +138,59 @@ $idAvatar = $_GET['idAvatar'] ?? '';
                 const controllerObj = this.el.object3D;
                 const p0 = new THREE.Vector3();
                 controllerObj.getWorldPosition(p0);
-                
+
                 const quaternion = new THREE.Quaternion();
                 controllerObj.getWorldQuaternion(quaternion);
                 const v0 = new THREE.Vector3(0, 0, -1);
                 v0.applyQuaternion(quaternion);
                 v0.multiplyScalar(this.data.curveShootingSpeed);
-                
+
                 const positions = this.curveLine.geometry.attributes.position.array;
                 let lastPoint = p0.clone();
                 this.hit = false;
                 this.hitPoint = null;
-                
+
                 const collisionEntities = document.querySelectorAll(this.data.collisionEntities);
                 const meshes = [];
                 collisionEntities.forEach(entity => {
                     const mesh = entity.getObject3D('mesh');
                     if (mesh) meshes.push(mesh);
                 });
-                
+
                 for (let i = 0; i < this.data.curveNumberPoints; i++) {
                     const t = i / 10;
-                    
+
                     const nextPoint = new THREE.Vector3();
                     nextPoint.copy(p0);
                     nextPoint.add(v0.clone().multiplyScalar(t));
                     nextPoint.add(this.gravity.clone().multiplyScalar(0.5 * t * t));
-                    
+
                     positions[i * 3] = nextPoint.x;
                     positions[i * 3 + 1] = nextPoint.y;
                     positions[i * 3 + 2] = nextPoint.z;
-                    
+
                     if (!this.hit && meshes.length > 0) {
                         const direction = nextPoint.clone().sub(lastPoint);
                         const distance = direction.length();
                         direction.normalize();
-                        
+
                         this.raycaster.set(lastPoint, direction);
                         this.raycaster.far = distance;
-                        
+
                         for (let mesh of meshes) {
                             const intersects = this.raycaster.intersectObject(mesh, true);
                             if (intersects.length > 0) {
                                 const intersect = intersects[0];
-                                
+
                                 const normal = intersect.face.normal.clone();
                                 normal.transformDirection(intersect.object.matrixWorld);
                                 const up = new THREE.Vector3(0, 1, 0);
                                 const angle = THREE.MathUtils.radToDeg(normal.angleTo(up));
-                                
+
                                 if (angle <= this.data.landingMaxAngle) {
                                     this.hit = true;
                                     this.hitPoint = intersect.point.clone();
-                                    
+
                                     for (let j = i; j < this.data.curveNumberPoints; j++) {
                                         positions[j * 3] = this.hitPoint.x;
                                         positions[j * 3 + 1] = this.hitPoint.y;
@@ -200,13 +201,13 @@ $idAvatar = $_GET['idAvatar'] ?? '';
                             }
                         }
                     }
-                    
+
                     lastPoint.copy(nextPoint);
                 }
-                
+
                 this.curveLine.geometry.attributes.position.needsUpdate = true;
                 this.curveLine.material.color.set(this.hit ? this.data.curveHitColor : this.data.curveMissColor);
-                
+
                 if (this.hit && this.hitPoint) {
                     this.hitMarker.setAttribute('position', this.hitPoint);
                     this.hitMarker.setAttribute('visible', 'true');
@@ -224,6 +225,125 @@ $idAvatar = $_GET['idAvatar'] ?? '';
                 }
             }
         });
+
+        // Composants pour les animaux
+        AFRAME.registerComponent('camel-animator', {
+            init: function () {
+                this.mixer = null;
+                this.clock = new THREE.Clock();
+
+                this.el.addEventListener('model-loaded', () => {
+                    const model = this.el.getObject3D('mesh');
+                    if (model && model.animations && model.animations.length > 0) {
+                        this.mixer = new THREE.AnimationMixer(model);
+                        let animToPlay = model.animations.find(a => a.name === 'Armature|WalkCycle');
+                        if (!animToPlay) animToPlay = model.animations[0];
+                        const action = this.mixer.clipAction(animToPlay);
+                        action.play();
+                    }
+                });
+            },
+
+            tick: function () {
+                if (this.mixer) this.mixer.update(this.clock.getDelta());
+            }
+        });
+
+        AFRAME.registerComponent('camel-walker', {
+            schema: {
+                distance: { type: 'number', default: 15 },
+                speed: { type: 'number', default: 2 }
+            },
+
+            init: function () {
+                this.direction = 1;
+                this.startZ = this.el.object3D.position.z;
+            },
+
+            tick: function (time, deltaTime) {
+                const position = this.el.object3D.position;
+                const rotation = this.el.object3D.rotation;
+
+                const moveSpeed = this.data.speed * (deltaTime / 1000) * this.direction;
+                position.z += moveSpeed;
+
+                if (this.direction === 1 && position.z >= this.startZ + this.data.distance) {
+                    this.direction = -1;
+                    rotation.y = 0;
+                } else if (this.direction === -1 && position.z <= this.startZ - this.data.distance) {
+                    this.direction = 1;
+                    rotation.y = Math.PI;
+                }
+            }
+        });
+
+        AFRAME.registerComponent('spider-animator', {
+            init: function () {
+                this.mixer = null;
+                this.clock = new THREE.Clock();
+
+                this.el.addEventListener('model-loaded', () => {
+                    const model = this.el.getObject3D('mesh');
+                    if (model && model.animations && model.animations.length > 0) {
+                        this.mixer = new THREE.AnimationMixer(model);
+                        const action = this.mixer.clipAction(model.animations[1]);
+                        action.play();
+                    }
+                });
+            },
+
+            tick: function () {
+                if (this.mixer) this.mixer.update(this.clock.getDelta());
+            }
+        });
+
+        AFRAME.registerComponent('spider-walker', {
+            schema: {
+                speed: { type: 'number', default: 0.5 },
+                radius: { type: 'number', default: 10 },
+                changeInterval: { type: 'number', default: 3000 }
+            },
+
+            init: function () {
+                this.startPos = this.el.object3D.position.clone();
+                this.targetAngle = Math.random() * Math.PI * 2;
+                this.lastChange = 0;
+                this.el.object3D.rotation.y = this.targetAngle - Math.PI;
+            },
+
+            tick: function (time, deltaTime) {
+                const position = this.el.object3D.position;
+                const rotation = this.el.object3D.rotation;
+
+                if (time - this.lastChange > this.data.changeInterval) {
+                    this.targetAngle = Math.random() * Math.PI * 2;
+                    this.lastChange = time;
+                }
+
+                let angleDiff = this.targetAngle - rotation.y;
+                while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+                while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+
+                rotation.y += angleDiff * 0.05;
+
+                const moveSpeed = this.data.speed * (deltaTime / 1000);
+                position.x += Math.sin(rotation.y + Math.PI) * moveSpeed;
+                position.z += Math.cos(rotation.y + Math.PI) * moveSpeed;
+
+                const distFromStart = Math.sqrt(
+                    Math.pow(position.x - this.startPos.x, 2) +
+                    Math.pow(position.z - this.startPos.z, 2)
+                );
+
+                if (distFromStart > this.data.radius) {
+                    const angleToCenter = Math.atan2(
+                        this.startPos.x - position.x,
+                        this.startPos.z - position.z
+                    );
+                    this.targetAngle = angleToCenter + Math.PI;
+                }
+            }
+        });
     </script>
 </head>
 
@@ -232,7 +352,8 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         <!-- Assets EN PREMIER -->
         <a-assets>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
-            <a-asset-item id="camel" src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
+            <a-asset-item id="camel"
+                src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
             <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
             <a-asset-item id="arch" src="../assets/modelAvatar/Arch.glb"></a-asset-item>
             <a-asset-item id="fence" src="../assets/modelAvatar/Fence Pillar.glb"></a-asset-item>
@@ -246,28 +367,53 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             <a-asset-item id="stone_pickaxe" src="../assets/modelAvatar/Stone Pickaxe.glb"></a-asset-item>
             <a-asset-item id="mayan_ziggurat" src="../assets/modelAvatar/Mayan Ziggurat.glb"></a-asset-item>
             <a-asset-item id="step_pyramid" src="../assets/modelAvatar/Step Pyramid.glb"></a-asset-item>
+            <a-asset-item id="camel" src="../assets/modelAvatar/camel-walk.glb"></a-asset-item>
+            <a-asset-item id="spider"
+                src="../assets/modelAvatar/animated_low-poly_spider_game-ready.glb"></a-asset-item>
+            <a-asset-item id="scorpion" src="../assets/modelAvatar/scorpion.glb"></a-asset-item>
             <?php if ($modelAvatar): ?>
                 <a-asset-item id="avatar" src="../<?php echo htmlspecialchars($modelAvatar); ?>"></a-asset-item>
             <?php endif; ?>
+
         </a-assets>
 
         <!-- Sol invisible pour téléportation -->
-        <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false" material="opacity: 0"></a-plane>
+        <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false"
+            material="opacity: 0"></a-plane>
 
         <!-- Environnement et lumière -->
         <a-entity environment="preset: egypt; groundYScale: 6; fog: 0.7"></a-entity>
         <a-entity light="type:ambient;intensity:1.0"></a-entity>
 
         <!-- Sphinx -->
-        <a-entity gltf-model="#sphynx" position="-14.976 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
-        <a-entity gltf-model="#sphynx" position="-27.970 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
-        <a-entity gltf-model="#sphynx" position="-27.970 5.313 -38.222" scale="1.5 1.5 1.5" rotation="0 180.000 0"></a-entity>
-        <a-entity gltf-model="#sphynx" position="-15.029 5.313 -38.222" scale="1.5 1.5 1.5" rotation="0 180.000 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-14.976 5.313 21.367" scale="1.5 1.5 1.5"
+            rotation="0 -0.976 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-27.970 5.313 21.367" scale="1.5 1.5 1.5"
+            rotation="0 -0.976 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-27.970 5.313 -38.222" scale="1.5 1.5 1.5"
+            rotation="0 180.000 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-15.029 5.313 -38.222" scale="1.5 1.5 1.5"
+            rotation="0 180.000 0"></a-entity>
 
         <!-- Animaux et statues -->
-        <a-entity gltf-model="#camel" position="10 0 0" scale="1 1 1" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="../assets/modelAvatar/camel-walk.glb" position="0.57776 1.63573 -42.6507"
+            scale="0.05 0.05 0.05" camel-animator camel-walker="distance: 50; speed: 1">
+        </a-entity>
         <a-entity gltf-model="#anubis" position="5 3.034 -2" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
         <a-entity gltf-model="#anubis" position="5 3.034 -20" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#spider" position="5 0 -5" scale="0.03 0.03 0.03" spider-animator
+            spider-walker="speed: 0.8; radius: 15; changeInterval: 2000">
+        </a-entity>
+        <a-entity gltf-model="#spider" position="-8 0 -3" scale="0.02 0.02 0.02" spider-animator
+            spider-walker="speed: 0.5; radius: 12; changeInterval: 3500">
+        </a-entity>
+        <a-entity gltf-model="#spider" position="3 0 8" scale="0.025 0.025 0.025" spider-animator
+            spider-walker="speed: 0.6; radius: 10; changeInterval: 2500">
+        </a-entity>
+        <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator
+            spider-walker="speed: 0.4; radius: 8; changeInterval: 4000">
+        </a-entity>
+        <a-entity gltf-model="#scorpion" position="0 0 5" scale="0.3 0.3 0.3"></a-entity>
 
         <!-- Arches -->
         <a-entity gltf-model="#arch" position="4 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
@@ -290,19 +436,23 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         <a-entity gltf-model="#sarcophagus" position="-56 -15.7 -15" scale="1 1 1" rotation="0 90 0"></a-entity>
 
         <!-- Coffre près de l'entrée -->
-        <a-entity gltf-model="#chest_glb" position="38.821 0.943 -4" scale="0.300 0.300 0.300" rotation="0 -90.873 0"></a-entity>
+        <a-entity gltf-model="#chest_glb" position="38.821 0.943 -4" scale="0.300 0.300 0.300"
+            rotation="0 -90.873 0"></a-entity>
 
         <!-- Tente -->
-        <a-entity gltf-model="#tent" position="-17.268 1.986 -9.3" scale="2.5105 2.5105 2.5105" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#tent" position="-17.268 1.986 -9.3" scale="2.5105 2.5105 2.5105"
+            rotation="0 180 0"></a-entity>
 
         <!-- Stone Pickaxe -->
         <a-entity gltf-model="#stone_pickaxe" position="-55 0.5 -4" scale="0.5 0.5 0.5" rotation="0 0 0"></a-entity>
 
         <!-- Mayan Ziggurat -->
-        <a-entity gltf-model="#step_pyramid" position="63.247 12.586 -65.459" scale="70 70 70" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#step_pyramid" position="63.247 12.586 -65.459" scale="70 70 70"
+            rotation="0 0 0"></a-entity>
 
         <!-- Roman Temple principal -->
-        <a-entity gltf-model="#roman_temple_main" position="1.000 0 -45.007" scale="0.0085 0.0085 0.0085" rotation="0 360 0"></a-entity>
+        <a-entity gltf-model="#roman_temple_main" position="1.000 0 -45.007" scale="0.0085 0.0085 0.0085"
+            rotation="0 360 0"></a-entity>
 
         <!-- Rig VR avec caméra et contrôleurs -->
         <a-entity id="rig" position="-18 0 -9">
@@ -316,8 +466,7 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             <a-entity id="rhand" oculus-touch-controls="hand: right"></a-entity>
 
             <!-- Main gauche avec téléportation -->
-            <a-entity id="lhand" 
-                oculus-touch-controls="hand: left"
+            <a-entity id="lhand" oculus-touch-controls="hand: left"
                 teleport-controls-custom="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleportable; button: trigger; curveShootingSpeed: 15">
             </a-entity>
         </a-entity>
