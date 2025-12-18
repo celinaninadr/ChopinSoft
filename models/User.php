@@ -131,7 +131,7 @@ function userDbGetProfile(int $idUser): ?array
     try {
         $sql = "SELECT u.idUser, u.username, u.userRole, u.idWorld, a.idAvatar, a.nameAvatar, a.modelAvatar, a.imgAvatar
                 FROM `user` u
-                JOIN avatar a ON a.idAvatar = u.idAvatar
+                LEFT JOIN avatar a ON a.idAvatar = u.idAvatar
                 WHERE u.idUser = :idUser";
         $stmt = getDb()->prepare($sql);
         $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);

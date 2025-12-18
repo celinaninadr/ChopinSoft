@@ -1,15 +1,15 @@
-<h1>Bonjour <?php echo htmlspecialchars($profile['username'] ?? ''); ?></h1>
+<h1>Bonjour <?php echo htmlspecialchars(isset($profile['username']) ? $profile['username'] : ''); ?></h1>
 
 <div class="card">
   <h2>Ton avatar</h2>
-  <p><b><?php echo htmlspecialchars($profile['nameAvatar'] ?? ''); ?></b></p>
-  <model-viewer src="<?php echo htmlspecialchars($profile['modelAvatar'] ?? ''); ?>" camera-controls auto-rotate></model-viewer>
+  <p><b><?php echo htmlspecialchars(isset($profile['nameAvatar']) ? $profile['nameAvatar'] : ''); ?></b></p>
+  <model-viewer src="<?php echo htmlspecialchars(isset($profile['modelAvatar']) ? $profile['modelAvatar'] : ''); ?>" camera-controls auto-rotate></model-viewer>
 
   <h3>Changer d'avatar</h3>
   <form method="post" action="/ChopinSoft/index.php?route=user/changeAvatar">
     <select name="idAvatar" required>
       <?php foreach ($avatars as $a): ?>
-        <option value="<?php echo (int)$a['idAvatar']; ?>" <?php echo ((int)$a['idAvatar'] === (int)$profile['idAvatar']) ? 'selected' : ''; ?>>
+        <option value="<?php echo (int)$a['idAvatar']; ?>" <?php echo (isset($profile['idAvatar']) && (int)$a['idAvatar'] === (int)$profile['idAvatar']) ? 'selected' : ''; ?>>
           <?php echo htmlspecialchars($a['nameAvatar']); ?>
         </option>
       <?php endforeach; ?>

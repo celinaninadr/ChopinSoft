@@ -102,9 +102,11 @@ function userProfile(): void
     $avatars = avatarAll();
 
     // pré-remplir pour "jouer"
+    $idWorld = isset($profile['idWorld']) ? (int)$profile['idWorld'] : 0;
+    $idAvatar = isset($profile['idAvatar']) ? (int)$profile['idAvatar'] : 0;
     $_SESSION['play'] = [
-        'idWorld' => (int)($profile['idWorld'] ?? 0),
-        'idAvatar' => (int)($profile['idAvatar'] ?? 0),
+        'idWorld' => $idWorld,
+        'idAvatar' => $idAvatar,
     ];
 
     render('user/profile', [
