@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>VR – Clavier Mot de Passe</title>
+<script src=="https://binzume.github.io/aframe-xylayout/dist/xylayout-all.min.js"></script>
+</head>
+<body>
+<a-scene background="color: #222">
+<a-plane rotation="-90 0 0" width="20" height="20" color="#555"></a-plane>
+<a-entity>
+<a-camera position="0 1.6 0"></a-camera>
+<!-- Controleur avec raycaster -->
+<a-entity laser-controls="hand: right"></a-entity>
+<a-entity laser-controls="hand: left"></a-entity>
+<a-entity laser-controls="hand: right" raycaster="objects: .collidable"></a-entity>
+<a-entity laser-controls="hand: left" raycaster="objects: .collidable"></a-entity>
+</a-entity>
+<!-- Champ de saisie inputText -->
+<a-plane position="0 2.3 -2.0" width="3.5" height="0.5" color="#111">
+<a-text id="inputText" value="" position="-1.7 0 0.01" width="3.4"></a-text>
+</a-plane>
+<!-- Clavier AZERTY -->
+<a-xywindow position="-0.8 1.3 -2.0" scale="0.15 0.15 0.15" width="6.5" height="3.2"
+title="AZERTY" xycontainer="direction: column; spacing: 0.05">
+<a-xycontainer direction="row" spacing="0.05">
+<a-xybutton label="A" width="2" height="2" keyboard-key="value:A"></a-xybutton>
+<a-xybutton label="Z" width="2" height="2" keyboard-key="value:Z"></a-xybutton>
+<a-xybutton label="E" width="2" height="2" keyboard-key="value:E"></a-xybutton>
+<a-xybutton label="R" width="2" height="2" keyboard-key="value:R"></a-xybutton>
+<a-xybutton label="T" width="2" height="2" keyboard-key="value:T"></a-xybutton>
+<a-xybutton label="Y" width="2" height="2" keyboard-key="value:Y"></a-xybutton>
+</a-xycontainer>
+</a-xywindow>
+</a-entity>
+</a-scene>
+</body>
+</html>
