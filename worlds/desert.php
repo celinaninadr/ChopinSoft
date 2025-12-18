@@ -40,13 +40,15 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             <?php endif; ?>
         </a-entity>
         <!-- Coffre près de l'entrée -->
-        <a-entity gltf-model="#chest_glb" position="-57 0 -4" scale="0.25 0.25 0.25" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#chest_glb" position="38.821 0.943 -4" scale="0.300 0.300 0.300" rotation="0 -90.873 0"></a-entity>
 
         <a-entity environment="preset: egypt; groundYScale: 6; fog: 0.7"></a-entity>
         <a-entity light="type:ambient;intensity:1.0"></a-entity>
 
-        <a-entity gltf-model="#sphynx" position="-14.724 10.495 20" scale="1.5 1.5 1.5" rotation="0 30 0">
-        </a-entity>
+        <a-entity gltf-model="#sphynx" position="-14.976 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-27.970 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-27.970 5.313 -38.222" scale="1.5 1.5 1.5" rotation="0 180.000 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-15.029 5.313 -38.222" scale="1.5 1.5 1.5" rotation="0 180.000 0"></a-entity>
         <a-entity gltf-model="#camel" position="10 0 0" scale="1 1 1" rotation="0 90 0"> </a-entity>
         <a-entity gltf-model="#anubis" position="5 3.034 -2" scale="0.5 0.5 0.5" rotation="0 180 0"> </a-entity>
         <a-entity gltf-model="#anubis" position="5 3.034 -20" scale="0.5 0.5 0.5" rotation="0 180 0"> </a-entity>
@@ -62,15 +64,15 @@ $idAvatar = $_GET['idAvatar'] ?? '';
 
         <a-entity gltf-model="#pyramid" position="35 -10 -7" scale="8 8 8" rotation="0 133 0"> </a-entity>
         <a-entity gltf-model="#roman_temple" position="-15 2.6 23" scale="7.5 7.5 7.5" rotation="0 180 0"> </a-entity>
-        <a-entity gltf-model="#roman_temple" position="-28 5 23" scale="7.5 7.5 7.5" rotation="0 180 0"> </a-entity>
-        <a-entity gltf-model="#roman_temple" position="-15 5 -40" scale="7.5 7.5 7.5" rotation="0 360 0"> </a-entity>
-        <a-entity gltf-model="#roman_temple" position="-28 5 -40" scale="7.5 7.5 7.5" rotation="0 360 0"> </a-entity>
+        <a-entity gltf-model="#roman_temple" position="-28 2.6 23" scale="7.5 7.5 7.5" rotation="0 180 0"> </a-entity>
+        <a-entity gltf-model="#roman_temple" position="-15 2.6 -40" scale="7.5 7.5 7.5" rotation="0 360 0"> </a-entity>
+        <a-entity gltf-model="#roman_temple" position="-28 2.6 -40" scale="7.5 7.5 7.5" rotation="0 360 0"> </a-entity>
 
         <a-entity gltf-model="#sarcophagus" position="-56 -15,7  -15" scale="1 1 1" rotation="0 90 0"> </a-entity>
 
         <!-- Rig VR avec caméra et contrôleurs -->
         <a-entity id="rig" position="0 0 0">
-            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: false"></a-camera>
+            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
 
             <!-- Main droite -->
             <a-entity id="rhand" laser-controls="hand: right"></a-entity>
@@ -82,11 +84,14 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         </a-entity>
 
         <!-- Tente -->
-        <a-entity gltf-model="#tent" position="-17.268 2.448 -9.3" scale="2.5105 2.5105 2.5105"
+        <a-entity gltf-model="#tent" position="-17.268 1.986 -9.3" scale="2.5105 2.5105 2.5105"
             rotation="0 180 0"></a-entity>
 
         <!-- Stone Pickaxe -->
         <a-entity gltf-model="#stone_pickaxe" position="-55 0.5 -4" scale="0.5 0.5 0.5" rotation="0 0 0"></a-entity>
+
+        <!-- Mayan Ziggurat -->
+        <a-entity gltf-model="#step_pyramid" position="63.247 12.586 -65.459" scale="70 70 70" rotation="0 0 0"></a-entity>
 
 
         <!-- Roman Temple -->
@@ -108,6 +113,8 @@ $idAvatar = $_GET['idAvatar'] ?? '';
             <a-asset-item id="tent" src="../assets/modelAvatar/Tent.glb"></a-asset-item>
             <a-asset-item id="roman_temple_main" src="../assets/modelAvatar/roman_temple.glb"></a-asset-item>
             <a-asset-item id="stone_pickaxe" src="../assets/modelAvatar/Stone Pickaxe.glb"></a-asset-item>
+            <a-asset-item id="mayan_ziggurat" src="../assets/modelAvatar/Mayan Ziggurat.glb"></a-asset-item>
+            <a-asset-item id="step_pyramid" src="../assets/modelAvatar/Step Pyramid.glb"></a-asset-item>
             <?php if ($modelAvatar): ?>
                 <a-asset-item id="avatar" src="../<?php echo htmlspecialchars($modelAvatar); ?>"></a-asset-item>
             <?php endif; ?>
