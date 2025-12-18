@@ -30,6 +30,9 @@ $idAvatar = $_GET['idAvatar'] ?? '';
 
 <body>
     <a-scene>
+        <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false"
+            material="opacity: 0"></a-plane>
+
         <a-entity id="rig" rotation="0 0 0">
             <a-entity camera position="-18 2.8 -9" wasd-controls look-controls></a-entity>
             <?php if ($modelAvatar): ?>
@@ -57,6 +60,7 @@ $idAvatar = $_GET['idAvatar'] ?? '';
         <a-entity gltf-model="#fence" position="-4 0 -7" scale="1.5 1.5 1.5" rotation="0 0 0"> </a-entity>
         <a-entity gltf-model="#coin" position="2 0 2" scale="0.25 0.25 0.25" rotation="0 0 0"> </a-entity>
 
+        <a-entity gltf-model="#pyramid" position="35 -10 -7" scale="8 8 8" rotation="0 133 0"> </a-entity>
         <a-entity gltf-model="#roman_temple" position="-15 2.6 23" scale="7.5 7.5 7.5" rotation="0 180 0"> </a-entity>
         <a-entity gltf-model="#roman_temple" position="-28 5 23" scale="7.5 7.5 7.5" rotation="0 180 0"> </a-entity>
         <a-entity gltf-model="#roman_temple" position="-15 5 -40" scale="7.5 7.5 7.5" rotation="0 360 0"> </a-entity>
@@ -64,19 +68,17 @@ $idAvatar = $_GET['idAvatar'] ?? '';
 
         <a-entity gltf-model="#sarcophagus" position="-56 -15,7  -15" scale="1 1 1" rotation="0 90 0"> </a-entity>
 
-<!-- Rig VR avec caméra et contrôleurs -->
+        <!-- Rig VR avec caméra et contrôleurs -->
         <a-entity id="rig" position="0 0 0">
-            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
+            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: false"></a-camera>
 
             <!-- Main droite -->
-            <a-entity id="rhand" 
-                      hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc">
+            <a-entity id="rhand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc">
             </a-entity>
 
             <!-- Main gauche avec téléportation -->
-            <a-entity id="lhand" 
-                      hand-controls="hand: left; handModelStyle: lowPoly; color: #ccccff"
-                      teleport-controls="cameraRig: #rig; teleportOrigin: #camera; button: trigger; curveShootingSpeed: 15; landingMaxAngle: 60; collisionEntities: [a-box, a-plane, a-circle]; type: parabolic">
+            <a-entity id="lhand" hand-controls="hand: left; handModelStyle: lowPoly; color: #ccccff"
+                teleport-controls="cameraRig: #rig; teleportOrigin: #camera; button: trigger; curveShootingSpeed: 15; landingMaxAngle: 90; collisionEntities: .teleportable; type: parabolic">
             </a-entity>
         </a-entity>
 
