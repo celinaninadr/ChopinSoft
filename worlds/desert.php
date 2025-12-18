@@ -8,24 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
     
-    <script>
-        // Composant pour l'animation de la tempête
-        AFRAME.registerComponent('sandstorm-animator', {
-            schema: {
-                intensity: {type: 'number', default: 1}
-            },
-            init: function() {
-                this.time = 0;
-            },
-            tick: function(time, deltaTime) {
-                this.time += deltaTime * 0.001;
-                
-                // Animation ondulante de la tempête
-                const wave = Math.sin(this.time * 0.5) * 0.3 + 0.7;
-                const particleSystem = this.el.components['particle-system'];
-                
-                if (particleSystem) {
-                    particleSystem.particleGroup.emitters[0].particleCount = Math.floor(2000 * wave * this.data.intensity);
     <script
         src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
 
@@ -227,7 +209,7 @@
                 }
             }
         });
-=======
+
         // Composants pour les animaux
         AFRAME.registerComponent('camel-animator', {
             init: function () {
