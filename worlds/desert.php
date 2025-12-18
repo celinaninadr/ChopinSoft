@@ -627,6 +627,7 @@
             <!-- ASSETS MANQUANTS AJOUTÉS -->
             <a-asset-item id="spider" src="../assets/modelAvatar/animated_low-poly_spider_game-ready.glb"></a-asset-item>
             <a-asset-item id="scorpion" src="../assets/modelAvatar/scorpion.glb"></a-asset-item>
+            <a-asset-item id="house" src="../assets/modelAvatar/House.glb"></a-asset-item>
         </a-assets>
 
         <!-- Sol invisible pour téléportation -->
@@ -730,22 +731,158 @@
         <a-entity gltf-model="#anubis" position="5 3.034 -2" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
         <a-entity gltf-model="#anubis" position="5 3.034 -20" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
 
-        <!-- Araignées animées GRABBABLE -->
-        <a-entity gltf-model="#spider" position="5 0.1 -5" scale="0.03 0.03 0.03" 
-            spider-animator spider-walker="speed: 0.8; radius: 15; changeInterval: 2000" grabbable stoppable-on-grab>
-        </a-entity>
-        <a-entity gltf-model="#spider" position="-8 0.1 -3" scale="0.02 0.02 0.02" 
-            spider-animator spider-walker="speed: 0.5; radius: 12; changeInterval: 3500" grabbable stoppable-on-grab>
-        </a-entity>
-        <a-entity gltf-model="#spider" position="3 0.1 8" scale="0.025 0.025 0.025" 
-            spider-animator spider-walker="speed: 0.6; radius: 10; changeInterval: 2500" grabbable stoppable-on-grab>
-        </a-entity>
-        <a-entity gltf-model="#spider" position="-5 0.1 10" scale="0.04 0.04 0.04" 
-            spider-animator spider-walker="speed: 0.4; radius: 8; changeInterval: 4000" grabbable stoppable-on-grab>
+        <a-entity gltf-model="#arch" position="4 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#arch" position="2 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#arch" position="0 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#arch" position="-2 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
+
+        <a-entity gltf-model="#fence" position="-4 0 -13" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#fence" position="-4 0 -7" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#fence" position="-54.532 0 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#fence" position="-60.288 0.601 7.779" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#fence" position="-54.532 0.372 7.500" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#fence" position="-61.997 -0.090 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#fence" position="-60.240 -0.090 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#coin" position="2 0 2" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.011 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.131 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.141 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.151 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.161 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.171 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.181 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#sarcophagus" position="-56 -15,7  -15" scale="1 1 1" rotation="0 90 0"></a-entity>
+
+        <a-entity id="rig_player" position="0 0 0">
+            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
+
+            <a-entity id="rhand" laser-controls="hand: right"></a-entity>
+
+            <a-entity id="lhand" laser-controls="hand: left"
+                teleport-controls="cameraRig: #rig_player; teleportOrigin: #camera; button: trigger; curveShootingSpeed: 15; landingMaxAngle: 90; collisionEntities: .teleportable; type: parabolic">
+            </a-entity>
         </a-entity>
 
-        <!-- Scorpion GRABBABLE -->
-        <a-entity gltf-model="#scorpion" position="0 0.1 5" scale="0.3 0.3 0.3" grabbable></a-entity>
+        <a-entity gltf-model="#tent" position="-17.268 1.986 -9.3" scale="2.5105 2.5105 2.5105"
+            rotation="0 180 0"></a-entity>
+
+        <a-entity gltf-model="#stone_pickaxe" position="4.966 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425"></a-entity>
+        <a-entity gltf-model="#stone_pickaxe" position="3.090 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000"></a-entity>
+
+        <a-entity gltf-model="#roman_temple_main" position="1.000 0 -40.433" scale="0.0085 0.0085 0.0085"
+            rotation="0 360 0"></a-entity>
+
+        <a-entity gltf-model="#pyramids" position="-45 0 45" scale="100 100 100" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#chest_gold" position="-16.659 0.296 -7.821" scale="0.500 0.500 0.500" rotation="0 180.030 0"></a-entity>
+
+        <a-entity gltf-model="#coffin" position="-60 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coffin" position="-56.711 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coffin" position="-56.711 0 4.535" scale="1 1 1" rotation="0 0 0"></a-entity>        
+        <a-entity gltf-model="#coffin" position="-59.493 0 4.535" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coffin" position="-59.493 0 -5.713" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coffin" position="-57.820 0 -5.713" scale="1 1 1" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#chest_1" position="-15 0.5 25" scale="0.8 0.8 0.8" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#chest_1" position="-28 0.5 25" scale="0.8 0.8 0.8" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#chest_1" position="-15 0.5 -42" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#chest_1" position="-28 0.5 -42" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#bear_trap" position="-15 0.5 25" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#bear_trap" position="-28 0.5 25" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#bear_trap" position="-15 0.5 -42" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#bear_trap" position="-28 0.5 -42" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#torture_device" position="-30.137 0.036 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#torture_device" position="-45.137 0.5 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#torture_device" position="-40.320 0.2 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#torture_device" position="-35.320 0.046 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#spade" position="-15 0.5 20" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#spade" position="-28 0.5 20" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#spade" position="-15 0.5 -37" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#spade" position="-28 0.5 -37" scale="1 1 1" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#trap_door" position="2.388 0.033 4.821" scale="1 1 1" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#trap_door" position="2.388 0.247 -25.346" scale="1 1 1" rotation="0 90 0"></a-entity>
+
+
+        <!-- Normal Wall House -->
+        <a-entity gltf-model="#normal_wall" position="-14.358 -0.928 -44.021" scale="25.000 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="-58.924 -0.928 2.483" scale="25.000 1 1" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="-21.640 -0.918 27.845" scale="25.000 1 1" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="-58.924 -0.928 2.483" scale="25.000 1 1" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="24.173 -0.928 34.348" scale="8.105 1 1" rotation="0 -89.671 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="24.173 -0.928 -48.136 " scale="8.105 1 1" rotation="0 -89.671 0"></a-entity>
+
+
+        <a-assets>
+            <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
+            <a-asset-item id="camel"
+                src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
+            <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
+            <a-asset-item id="arch" src="../assets/modelAvatar/Arch.glb"></a-asset-item>
+            <a-asset-item id="fence" src="../assets/modelAvatar/Fence Pillar.glb"></a-asset-item>
+            <a-asset-item id="coin" src="../assets/modelAvatar/lowpoly_gold_coin.glb"></a-asset-item>
+            <a-asset-item id="pyramid" src="../assets/modelAvatar/Pyramid.glb"></a-asset-item>
+            <a-asset-item id="sarcophagus" src="../assets/modelAvatar/stone_sarcophagi_cairo_museum.glb"></a-asset-item>
+            <a-asset-item id="roman_temple" src="../assets/modelAvatar/low_poly_roman_temple_wip.glb"></a-asset-item>
+            <a-asset-item id="chest_glb" src="../assets/modelAvatar/chest.glb"></a-asset-item>
+            <a-asset-item id="tent" src="../assets/modelAvatar/Tent.glb"></a-asset-item>
+            <a-asset-item id="roman_temple_main" src="../assets/modelAvatar/roman_temple.glb"></a-asset-item>
+            <a-asset-item id="stone_pickaxe" src="../assets/modelAvatar/Stone Pickaxe.glb"></a-asset-item>
+            <a-asset-item id="mayan_ziggurat" src="../assets/modelAvatar/Mayan Ziggurat.glb"></a-asset-item>
+            <a-asset-item id="pyramids" src="../assets/modelAvatar/Pyramids.glb"></a-asset-item>
+            <a-asset-item id="chest_gold" src="../assets/modelAvatar/Chest Gold.glb"></a-asset-item>
+            <a-asset-item id="coffin" src="../assets/modelAvatar/Coffin.glb"></a-asset-item>
+            <a-asset-item id="bear_trap" src="../assets/modelAvatar/Bear Trap.glb"></a-asset-item>
+            <a-asset-item id="chest_1" src="../assets/modelAvatar/Chest (1).glb"></a-asset-item>
+            <a-asset-item id="torture_device" src="../assets/modelAvatar/Torture Device.glb"></a-asset-item>
+            <a-asset-item id="spade" src="../assets/modelAvatar/Spade.glb"></a-asset-item>
+            <a-asset-item id="trap_door" src="../assets/modelAvatar/Trap Door.glb"></a-asset-item>
+            <a-asset-item id="eye_of_horus" src="../assets/modelAvatar/eye_of_horus_educational.glb"></a-asset-item>
+            <a-asset-item id="normal_wall" src="../assets/modelAvatar/Normal Wall.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Sol invisible pour téléportation -->
+        <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false"
+            material="opacity: 0"></a-plane>
+
+        <!-- Environnement et lumière -->
+        <a-entity environment="preset: egypt; groundYScale: 6; fog: 0.7"></a-entity>
+        <a-entity light="type:ambient;intensity:1.0"></a-entity>
+
+        <!-- Sphinx -->
+        <a-entity gltf-model="#sphynx" position="-14.976 5.313 21.367" scale="1.5 1.5 1.5"
+            rotation="0 -0.976 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-27.970 5.313 21.367" scale="1.5 1.5 1.5"
+            rotation="0 -0.976 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-27.970 5.313 -38.222" scale="1.5 1.5 1.5"
+            rotation="0 180.000 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-15.029 5.313 -38.222" scale="1.5 1.5 1.5"
+            rotation="0 180.000 0"></a-entity>
+
+        <!-- Animaux et statues -->
+        <a-entity gltf-model="../assets/modelAvatar/camel-walk.glb" position="0.57776 1.63573 -42.6507"
+            scale="0.05 0.05 0.05" camel-animator camel-walker="distance: 50; speed: 1">
+        </a-entity>
+        <a-entity gltf-model="#anubis" position="5 3.034 -2" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#anubis" position="5 3.034 -20" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#spider" position="5 0 -5" scale="0.03 0.03 0.03" spider-animator
+            spider-walker="speed: 0.8; radius: 15; changeInterval: 2000">
+        </a-entity>
+        <a-entity gltf-model="#spider" position="-8 0 -3" scale="0.02 0.02 0.02" spider-animator
+            spider-walker="speed: 0.5; radius: 12; changeInterval: 3500">
+        </a-entity>
+        <a-entity gltf-model="#spider" position="3 0 8" scale="0.025 0.025 0.025" spider-animator
+            spider-walker="speed: 0.6; radius: 10; changeInterval: 2500">
+        </a-entity>
+        <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator
+            spider-walker="speed: 0.4; radius: 8; changeInterval: 4000">
+        </a-entity>
+        <a-entity gltf-model="#scorpion" position="0 0 5" scale="0.3 0.3 0.3"></a-entity>
 
         <!-- Arches -->
         <a-entity gltf-model="#arch" position="4 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
@@ -798,12 +935,9 @@
         <a-entity gltf-model="#stone_pickaxe" position="4.966 0.5 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425" grabbable></a-entity>
         <a-entity gltf-model="#stone_pickaxe" position="3.090 0.5 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000" grabbable></a-entity>
 
-        <!-- Pyramides -->
-        <a-entity gltf-model="#step_pyramid" position="63.247 13.848 -65.459" scale="40 40 40" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#pyramids" position="-45 0 45" scale="100 100 100" rotation="0 0 0"></a-entity>
+        <!-- Mayan Ziggurat -->
+            rotation="0 0 0"></a-entity>
 
-        <!-- Temple romain principal -->
-        <a-entity gltf-model="#roman_temple_main" position="1.000 0 -45.007" scale="0.0085 0.0085 0.0085" rotation="0 360 0"></a-entity>
 
         <!-- Cercueils -->
         <a-entity gltf-model="#coffin" position="-60 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
@@ -834,6 +968,9 @@
         <!-- Trappes -->
         <a-entity gltf-model="#trap_door" position="2.388 0.033 4.821" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#trap_door" position="2.388 0.247 -25.346" scale="1 1 1" rotation="0 90 0"></a-entity>
+
+        <!-- House -->
+        <a-entity gltf-model="#house" position="20 0 30" scale="6 6 6" rotation="0 0 0"></a-entity>
 
         <!-- Rig VR pour Oculus Quest 1 -->
         <a-entity id="rig" position="-18 0 -9">
