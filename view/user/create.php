@@ -25,15 +25,32 @@
   </div>
 
   <h2>Choisir un monde</h2>
-  <input type="hidden" name="idWorld" id="idWorld" value="">
-  <div class="worlds" id="worldsContainer">
-    <?php foreach ($worlds as $w): ?>
-      <div class="world" data-world-id="<?php echo (int)$w['idWorld']; ?>">
-        <?php echo htmlspecialchars($w['nameWorld']); ?>
+  <div class="carousel-container">
+    <button type="button" class="carousel-btn prev" id="prevWorldBtn">‹</button>
+    
+    <div class="carousel-wrapper">
+      <div class="worlds-carousel" id="worldsCarousel">
+        <?php foreach ($worlds as $w): ?>
+          <label class="world-slide" data-world-id="<?php echo (int)$w['idWorld']; ?>">
+            <div class="world-name"><b><?php echo htmlspecialchars($w['nameWorld']); ?></b></div>
+            <?php if (isset($w['imgWorld']) && !empty($w['imgWorld'])): ?>
+              <img src="<?php echo htmlspecialchars($w['imgWorld']); ?>" alt="<?php echo htmlspecialchars($w['nameWorld']); ?>" class="world-image">
+            <?php else: ?>
+              <div class="world-placeholder">
+                <span><?php echo htmlspecialchars($w['nameWorld']); ?></span>
+              </div>
+            <?php endif; ?>
+          </label>
+        <?php endforeach; ?>
       </div>
-    <?php endforeach; ?>
+    </div>
+    
+    <button type="button" class="carousel-btn next" id="nextWorldBtn">›</button>
   </div>
-  <p class="small">Clique sur un monde avant de jouer.</p>
+  
+  <div class="carousel-indicators" id="worldIndicators"></div>
+  <div class="carousel-counter" id="worldCounter"></div>
+  <input type="hidden" name="idWorld" id="idWorld" value="">
 
   <h2>Choisir un avatar (3D)</h2>
   <div class="carousel-container">
@@ -51,7 +68,7 @@
               auto-rotate
               shadow-intensity="1"
               exposure="1.0"
-              camera-orbit="0deg 75deg 8m"
+              camera-orbit="0deg 75deg 4m"
               min-camera-orbit="auto auto 2m"
               max-camera-orbit="auto auto 12m"
               loading="eager"
@@ -73,24 +90,106 @@
 </form>
 
 <script>
-  // Gestion de la sélection des mondes
-  const worlds = document.querySelectorAll('.world');
+  // ===========================================
+  // CAROUSEL DES MONDES
+  // ===========================================
+  const worldCarousel = document.getElementById('worldsCarousel');
+  const worldSlides = document.querySelectorAll('.world-slide');
+  const prevWorldBtn = document.getElementById('prevWorldBtn');
+  const nextWorldBtn = document.getElementById('nextWorldBtn');
+  const worldIndicatorsContainer = document.getElementById('worldIndicators');
+  const worldCounterElement = document.getElementById('worldCounter');
   const idWorldInput = document.getElementById('idWorld');
   
-  worlds.forEach(world => {
-    world.addEventListener('click', function() {
-      // Retirer la classe selected de tous les mondes
-      worlds.forEach(w => w.classList.remove('selected'));
-      
-      // Ajouter la classe selected au monde cliqué
-      this.classList.add('selected');
-      
-      // Mettre à jour l'input hidden
-      idWorldInput.value = this.getAttribute('data-world-id');
+  let currentWorldIndex = 0;
+  const totalWorldSlides = worldSlides.length;
+
+  // Créer les indicateurs pour les mondes
+  function createWorldIndicators() {
+    worldIndicatorsContainer.innerHTML = '';
+    for (let i = 0; i < totalWorldSlides; i++) {
+      const indicator = document.createElement('div');
+      indicator.classList.add('indicator');
+      if (i === 0) indicator.classList.add('active');
+      indicator.addEventListener('click', () => goToWorldSlide(i));
+      worldIndicatorsContainer.appendChild(indicator);
+    }
+  }
+
+  // Mettre à jour le compteur des mondes
+  function updateWorldCounter() {
+    worldCounterElement.textContent = `Monde ${currentWorldIndex + 1} sur ${totalWorldSlides}`;
+  }
+
+  // Aller à un slide spécifique pour les mondes
+  function goToWorldSlide(index) {
+    if (index < 0) index = 0;
+    if (index >= totalWorldSlides) index = totalWorldSlides - 1;
+    
+    currentWorldIndex = index;
+    worldCarousel.style.transform = `translateX(-${currentWorldIndex * 100}%)`;
+    
+    // Mettre à jour les classes active
+    worldSlides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === currentWorldIndex);
+    });
+    
+    // Mettre à jour les indicateurs
+    const worldIndicators = worldIndicatorsContainer.querySelectorAll('.indicator');
+    worldIndicators.forEach((ind, i) => {
+      ind.classList.toggle('active', i === currentWorldIndex);
+    });
+    
+    // Mettre à jour l'input hidden avec l'ID du monde
+    const currentWorldSlide = worldSlides[currentWorldIndex];
+    idWorldInput.value = currentWorldSlide.getAttribute('data-world-id');
+    
+    // Mettre à jour les boutons
+    prevWorldBtn.disabled = currentWorldIndex === 0;
+    nextWorldBtn.disabled = currentWorldIndex === totalWorldSlides - 1;
+    
+    // Mettre à jour le compteur
+    updateWorldCounter();
+  }
+
+  // Navigation pour les mondes
+  prevWorldBtn.addEventListener('click', () => goToWorldSlide(currentWorldIndex - 1));
+  nextWorldBtn.addEventListener('click', () => goToWorldSlide(currentWorldIndex + 1));
+
+  // Clic sur un slide de monde pour le sélectionner
+  worldSlides.forEach((slide, index) => {
+    slide.addEventListener('click', () => {
+      if (index !== currentWorldIndex) {
+        goToWorldSlide(index);
+      }
     });
   });
 
-  // Gestion du carousel d'avatars
+  // Support du swipe sur mobile pour les mondes
+  let worldTouchStartX = 0;
+  let worldTouchEndX = 0;
+
+  worldCarousel.addEventListener('touchstart', (e) => {
+    worldTouchStartX = e.changedTouches[0].screenX;
+  });
+
+  worldCarousel.addEventListener('touchend', (e) => {
+    worldTouchEndX = e.changedTouches[0].screenX;
+    handleWorldSwipe();
+  });
+
+  function handleWorldSwipe() {
+    if (worldTouchStartX - worldTouchEndX > 50) {
+      nextWorldBtn.click();
+    }
+    if (worldTouchEndX - worldTouchStartX > 50) {
+      prevWorldBtn.click();
+    }
+  }
+
+  // ===========================================
+  // CAROUSEL DES AVATARS
+  // ===========================================
   const carousel = document.getElementById('avatarsCarousel');
   const slides = document.querySelectorAll('.avatar-slide');
   const prevBtn = document.getElementById('prevBtn');
@@ -132,7 +231,7 @@
     });
     
     // Mettre à jour les indicateurs
-    document.querySelectorAll('.indicator').forEach((ind, i) => {
+    document.querySelectorAll('#carouselIndicators .indicator').forEach((ind, i) => {
       ind.classList.toggle('active', i === currentIndex);
     });
     
@@ -158,9 +257,19 @@
   // Navigation au clavier
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') {
-      prevBtn.click();
+      // Vérifier si on est sur le carousel des avatars ou des mondes
+      // Pour simplifier, on navigue dans les deux
+      if (document.activeElement.closest('.avatars-carousel')) {
+        prevBtn.click();
+      } else {
+        prevWorldBtn.click();
+      }
     } else if (e.key === 'ArrowRight') {
-      nextBtn.click();
+      if (document.activeElement.closest('.avatars-carousel')) {
+        nextBtn.click();
+      } else {
+        nextWorldBtn.click();
+      }
     }
   });
 
@@ -188,16 +297,19 @@
 
   function handleSwipe() {
     if (touchStartX - touchEndX > 50) {
-      // Swipe left
       nextBtn.click();
     }
     if (touchEndX - touchStartX > 50) {
-      // Swipe right
       prevBtn.click();
     }
   }
 
-  // Initialisation
+  // ===========================================
+  // INITIALISATION
+  // ===========================================
+  createWorldIndicators();
+  goToWorldSlide(0);
+  
   createIndicators();
   goToSlide(0);
 
