@@ -3,14 +3,288 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Environnement désert - Tempête</title>
-    <meta name="description" content="Environnement desert avec tempête" />
+    <title>Environnement désert - Tempête avec Physique</title>
+    <meta name="description" content="Environnement desert avec tempête et physique" />
 
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script
         src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
 
+    <style>
+        #info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #0f0;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 13px;
+            z-index: 9999;
+        }
+
+        #help {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 12px 25px;
+            font-family: sans-serif;
+            border-radius: 8px;
+        }
+    </style>
+
     <script>
+        /**
+         * COMPOSANT POUR VOIR LES MAINS SUR PC (FPS STYLE)
+         */
+        AFRAME.registerComponent('simulate-hands-desktop', {
+            schema: {
+                offset: { type: 'vec3', default: { x: 0.2, y: -0.2, z: -0.5 } },
+                color: { type: 'color', default: '#ffccaa' }
+            },
+            init: function () {
+                this.camera = document.querySelector('a-camera');
+
+                // 1. Créer un visuel temporaire (car le modèle VR ne charge pas sur PC)
+                this.dummyHand = document.createElement('a-box');
+                this.dummyHand.setAttribute('scale', '0.05 0.05 0.15');
+                this.dummyHand.setAttribute('color', this.data.color);
+                this.dummyHand.setAttribute('opacity', '0.8');
+                this.el.appendChild(this.dummyHand);
+
+                // 2. Gestion VR : Cacher le cube moche quand on entre en VR
+                this.el.sceneEl.addEventListener('enter-vr', () => {
+                    this.dummyHand.setAttribute('visible', false);
+                });
+                this.el.sceneEl.addEventListener('exit-vr', () => {
+                    this.dummyHand.setAttribute('visible', true);
+                });
+            },
+            tick: function () {
+                // Si on est en VR, on laisse le hand-controls gérer la position
+                if (this.el.sceneEl.is('vr-mode') || !this.camera) return;
+
+                // SINON (Desktop): On colle la main à la caméra avec un décalage
+                const camObj = this.camera.object3D;
+                const myObj = this.el.object3D;
+
+                myObj.position.copy(camObj.position);
+                myObj.rotation.copy(camObj.rotation);
+
+                // Appliquer le décalage (offset) pour mettre la main devant les yeux
+                myObj.translateX(this.data.offset.x);
+                myObj.translateY(this.data.offset.y);
+                myObj.translateZ(this.data.offset.z);
+            }
+        });
+        /**
+         * SYSTÈME DE PHYSIQUE MAISON
+         */
+        AFRAME.registerComponent('simple-physics', {
+            schema: {
+                mass: { type: 'number', default: 1 },
+                restitution: { type: 'number', default: 0.5 }, // rebond
+                friction: { type: 'number', default: 0.98 },
+                floorY: { type: 'number', default: 0 }
+            },
+
+            init: function () {
+                this.velocity = new THREE.Vector3(0, 0, 0);
+                this.gravity = -15;
+                this.isGrabbed = false;
+
+                // Sauvegarder la couleur originale
+                const material = this.el.getAttribute('material');
+                this.originalColor = material ? material.color : '#ff0000';
+
+                // Calculer la taille de l'objet
+                this.halfHeight = 0.2;
+                const geometry = this.el.getAttribute('geometry');
+                if (geometry) {
+                    if (geometry.height) this.halfHeight = geometry.height / 2;
+                    else if (geometry.radius) this.halfHeight = geometry.radius;
+                }
+
+                // Pour les modèles GLB, essayer d'obtenir la taille
+                this.el.addEventListener('model-loaded', () => {
+                    const mesh = this.el.getObject3D('mesh');
+                    if (mesh) {
+                        const box = new THREE.Box3().setFromObject(mesh);
+                        const size = box.getSize(new THREE.Vector3());
+                        this.halfHeight = size.y / 2;
+                    }
+                });
+            },
+
+            grab: function () {
+                this.isGrabbed = true;
+                this.velocity.set(0, 0, 0);
+
+                // Changer couleur si c'est une primitive
+                if (this.el.getAttribute('geometry')) {
+                    this.el.setAttribute('material', 'color', '#00ff00');
+                }
+
+                document.getElementById('status').textContent = '✅ ATTRAPÉ!';
+            },
+
+            release: function (throwVelocity) {
+                this.isGrabbed = false;
+                if (throwVelocity) {
+                    this.velocity.copy(throwVelocity).multiplyScalar(15);
+                }
+
+                // Restaurer couleur
+                if (this.el.getAttribute('geometry')) {
+                    this.el.setAttribute('material', 'color', this.originalColor);
+                }
+
+                document.getElementById('status').textContent = '🚀 Lancé!';
+            },
+
+            tick: function (time, delta) {
+                if (this.isGrabbed) return;
+
+                const dt = Math.min(delta / 1000, 0.05);
+                const pos = this.el.object3D.position;
+
+                // Gravité
+                this.velocity.y += this.gravity * dt;
+
+                // Appliquer vélocité
+                pos.x += this.velocity.x * dt;
+                pos.y += this.velocity.y * dt;
+                pos.z += this.velocity.z * dt;
+
+                // Collision avec le sol
+                const groundY = this.data.floorY + this.halfHeight;
+                if (pos.y < groundY) {
+                    pos.y = groundY;
+                    this.velocity.y *= -this.data.restitution;
+                    this.velocity.x *= this.data.friction;
+                    this.velocity.z *= this.data.friction;
+
+                    if (Math.abs(this.velocity.y) < 0.5) {
+                        this.velocity.y = 0;
+                    }
+                }
+
+                // Friction air
+                this.velocity.x *= 0.995;
+                this.velocity.z *= 0.995;
+            }
+        });
+
+        /**
+         * SYSTÈME DE GRAB DESKTOP
+         */
+        AFRAME.registerComponent('grab-system', {
+            init: function () {
+                this.grabbed = null;
+                this.hovered = null;
+                this.grabDistance = 3;
+                this.ray = new THREE.Raycaster();
+                this.mouse = new THREE.Vector2();
+                this.lastPos = new THREE.Vector3();
+                this.velocity = new THREE.Vector3();
+                this.smoothVel = new THREE.Vector3();
+
+                // Curseur
+                this.dot = document.createElement('a-sphere');
+                this.dot.setAttribute('radius', '0.05');
+                this.dot.setAttribute('color', '#00aaff');
+                this.dot.setAttribute('material', 'shader:flat');
+                this.el.sceneEl.appendChild(this.dot);
+
+                window.addEventListener('mousemove', e => {
+                    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                });
+
+                window.addEventListener('mousedown', () => {
+                    if (this.grabbed) {
+                        const phys = this.grabbed.components['simple-physics'];
+                        if (phys) phys.release(this.smoothVel);
+                        this.grabbed = null;
+                        this.dot.setAttribute('visible', true);
+                    } else if (this.hovered) {
+                        const phys = this.hovered.components['simple-physics'];
+                        if (phys) {
+                            phys.grab();
+                            this.grabbed = this.hovered;
+
+                            const objPos = new THREE.Vector3();
+                            this.grabbed.object3D.getWorldPosition(objPos);
+                            const camPos = new THREE.Vector3();
+                            this.el.sceneEl.camera.getWorldPosition(camPos);
+                            this.grabDistance = objPos.distanceTo(camPos);
+                            this.lastPos.copy(objPos);
+                            this.smoothVel.set(0, 0, 0);
+
+                            this.dot.setAttribute('visible', false);
+                        }
+                    }
+                });
+
+                window.addEventListener('wheel', e => {
+                    if (this.grabbed) {
+                        this.grabDistance += e.deltaY * -0.005;
+                        this.grabDistance = Math.max(1, Math.min(10, this.grabDistance));
+                    }
+                });
+            },
+
+            tick: function () {
+                const cam = this.el.sceneEl.camera;
+                if (!cam) return;
+
+                this.ray.setFromCamera(this.mouse, cam);
+                const dir = this.ray.ray.direction.clone().normalize();
+                const origin = this.ray.ray.origin.clone();
+
+                if (this.grabbed) {
+                    const targetPos = origin.clone().add(dir.clone().multiplyScalar(this.grabDistance));
+                    const currentPos = this.grabbed.object3D.position.clone();
+                    this.velocity.subVectors(targetPos, currentPos);
+                    this.smoothVel.lerp(this.velocity, 0.3);
+                    this.lastPos.copy(currentPos);
+                    this.grabbed.object3D.position.lerp(targetPos, 0.3);
+                    return;
+                }
+
+                // Recherche d'objets avec simple-physics
+                const objs = document.querySelectorAll('[simple-physics]');
+                let best = null, bestD = 999, pt = null;
+
+                objs.forEach(o => {
+                    const m = o.getObject3D('mesh');
+                    if (!m) return;
+                    const h = this.ray.intersectObject(m, true);
+                    if (h.length && h[0].distance < bestD) {
+                        bestD = h[0].distance;
+                        best = o;
+                        pt = h[0].point;
+                    }
+                });
+
+                if (best && bestD < 20) {
+                    this.hovered = best;
+                    this.dot.setAttribute('color', '#00ff00');
+                    this.dot.object3D.position.copy(pt);
+                    document.getElementById('status').textContent = '👆 CLIC pour attraper';
+                } else {
+                    this.hovered = null;
+                    this.dot.setAttribute('color', '#00aaff');
+                    const dotPos = origin.clone().add(dir.multiplyScalar(5));
+                    this.dot.object3D.position.copy(dotPos);
+                    document.getElementById('status').textContent = '🔵 Vise un objet...';
+                }
+            }
+        });
+
         /**
          * 1. TELEPORT CONTROLS CUSTOM
          */
@@ -68,16 +342,16 @@
                 this.hitMarker.setAttribute('visible', 'false');
                 this.el.sceneEl.appendChild(this.hitMarker);
             },
-            onButtonDown: function () { 
+            onButtonDown: function () {
                 console.log('🎯 Trigger pressed');
-                this.active = true; 
-                this.curveLine.visible = true; 
+                this.active = true;
+                this.curveLine.visible = true;
             },
             onButtonUp: function () {
                 console.log('🎯 Trigger released');
-                if (this.active && this.hit && this.hitPoint) { 
+                if (this.active && this.hit && this.hitPoint) {
                     console.log('✨ Teleporting to:', this.hitPoint);
-                    this.teleport(); 
+                    this.teleport();
                 }
                 this.active = false;
                 this.curveLine.visible = false;
@@ -257,8 +531,24 @@
             }
         });
 
+        AFRAME.registerComponent('stoppable-on-grab', {
+            init: function () {
+                this.el.addEventListener('grabbed', () => {
+                    const walker = this.el.components['spider-walker'];
+                    if (walker) walker.paused = true;
+                });
+                this.el.addEventListener('released', () => {
+                    const walker = this.el.components['spider-walker'];
+                    if (walker) {
+                        walker.paused = false;
+                        walker.startPos = this.el.object3D.position.clone();
+                    }
+                });
+            }
+        });
+
         /**
-         * 3. GRABBABLE SYSTEM
+         * 3. GRABBABLE SYSTEM VR (ancien système pour les contrôleurs)
          */
         AFRAME.registerComponent('grabbable', {
             schema: { enabled: { type: 'boolean', default: true } },
@@ -301,14 +591,18 @@
                 this.createLaser();
                 const grabEvents = ['gripdown', 'squeezestart'];
                 const releaseEvents = ['gripup', 'squeezeend'];
-                grabEvents.forEach(evt => { this.el.addEventListener(evt, () => { 
-                    console.log('🤜 Grip pressed');
-                    this.tryGrab(); 
-                }); });
-                releaseEvents.forEach(evt => { this.el.addEventListener(evt, () => { 
-                    console.log('🤚 Grip released');
-                    this.release(); 
-                }); });
+                grabEvents.forEach(evt => {
+                    this.el.addEventListener(evt, () => {
+                        console.log('🤜 Grip pressed');
+                        this.tryGrab();
+                    });
+                });
+                releaseEvents.forEach(evt => {
+                    this.el.addEventListener(evt, () => {
+                        console.log('🤚 Grip released');
+                        this.release();
+                    });
+                });
                 console.log('✅ Grab controls initialized for', this.data.hand, 'hand');
             },
             createLaser: function () {
@@ -385,26 +679,18 @@
                 }
             }
         });
-
-        AFRAME.registerComponent('stoppable-on-grab', {
-            init: function () {
-                this.el.addEventListener('grabbed', () => {
-                    const walker = this.el.components['spider-walker'];
-                    if (walker) walker.paused = true;
-                });
-                this.el.addEventListener('released', () => {
-                    const walker = this.el.components['spider-walker'];
-                    if (walker) {
-                        walker.paused = false;
-                        walker.startPos = this.el.object3D.position.clone();
-                    }
-                });
-            }
-        });
     </script>
 </head>
 
 <body>
+    <div id="info">
+        <b>🎮 Désert VR - Physique</b><br>
+        <span id="status">Prêt!</span>
+    </div>
+    <div id="help">
+        <b>Desktop:</b> CLIC = attraper/lancer | Molette = distance | <b>VR:</b> GRIP = attraper | TRIGGER = téléport
+    </div>
+
     <a-scene fog="type: exponential; color: #dcb271; density: 0.04">
 
         <a-assets>
@@ -561,62 +847,57 @@
         <a-entity gltf-model="#trap_door" position="2.388 0.033 4.821" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#trap_door" position="2.388 0.247 -25.346" scale="1 1 1" rotation="0 90 0"></a-entity>
 
-        <a-entity gltf-model="#stone_pickaxe" position="4.966 -0.022 2.221" scale="0.5 0.5 0.5"
-            rotation="90.000 0 -71.425" grabbable></a-entity>
-        <a-entity gltf-model="#stone_pickaxe" position="3.090 -0.022 2.221" scale="0.5 0.5 0.5"
-            rotation="90.000 0 100.000" grabbable></a-entity>
+        <!-- OBJETS AVEC PHYSIQUE (nouveau système) -->
+        <a-entity gltf-model="#stone_pickaxe" position="4.966 2 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425"
+            simple-physics="mass: 0.8; restitution: 0.3"></a-entity>
+        <a-entity gltf-model="#stone_pickaxe" position="3.090 2 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000"
+            simple-physics="mass: 0.8; restitution: 0.3"></a-entity>
 
-        <a-entity gltf-model="#coin" position="2 0 2" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.011 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
-            grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.131 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
-            grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.141 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
-            grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.151 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
-            grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.161 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
-            grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.171 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
-            grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.181 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
-            grabbable></a-entity>
+        <!-- Pièces avec physique -->
+        <a-entity gltf-model="#coin" position="2 2 2" scale="0.25 0.25 0.25" rotation="0 0 0"
+            simple-physics="mass: 0.2; restitution: 0.7"></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 2 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            simple-physics="mass: 0.2; restitution: 0.7"></a-entity>
+        <a-entity gltf-model="#coin" position="-58.820 2.5 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            simple-physics="mass: 0.2; restitution: 0.7"></a-entity>
+        <a-entity gltf-model="#coin" position="-57.820 3 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            simple-physics="mass: 0.2; restitution: 0.7"></a-entity>
+
+        <!-- Objets de test avec physique -->
+        <a-box position="-10 3 -5" color="#ff0000" geometry="width: 0.4; height: 0.4; depth: 0.4"
+            simple-physics="mass: 1; restitution: 0.6"></a-box>
+        <a-sphere position="-12 3 -5" color="#ff6600" geometry="radius: 0.3"
+            simple-physics="mass: 0.5; restitution: 0.8"></a-sphere>
+        <a-box position="-14 3 -5" color="#ffff00" geometry="width: 0.3; height: 0.3; depth: 0.3"
+            simple-physics="mass: 0.3; restitution: 0.7"></a-box>
 
         <a-entity gltf-model="#camel_walk" position="0.57776 1.63573 -42.6507" scale="0.05 0.05 0.05" camel-animator
             camel-walker="distance: 50; speed: 1"></a-entity>
 
-        <a-entity gltf-model="#camel_walk" position="0.57776 1.63573 -42.6507" scale="0.05 0.05 0.05" camel-animator camel-walker="distance: 50; speed: 1"></a-entity>
-        
-        <a-entity gltf-model="#spider" position="-36.400 0 -13.144" scale="0.03 0.03 0.03" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.8; radius: 15; changeInterval: 2000"></a-entity>
-        <a-entity gltf-model="#spider" position="-43.199 0.119 15.046" scale="0.02 0.02 0.02" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.5; radius: 12; changeInterval: 3500"></a-entity>
-        <a-entity gltf-model="#spider" position="-15.322 0.211 -27.038" scale="0.025 0.025 0.025" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.6; radius: 10; changeInterval: 2500"></a-entity>
-        <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.4; radius: 8; changeInterval: 4000"></a-entity>
-        
+        <a-entity gltf-model="#spider" position="5 0 -5" scale="0.03 0.03 0.03" spider-animator grabbable
+            stoppable-on-grab spider-walker="speed: 0.8; radius: 15; changeInterval: 2000"></a-entity>
+        <a-entity gltf-model="#spider" position="-8 0 -3" scale="0.02 0.02 0.02" spider-animator grabbable
+            stoppable-on-grab spider-walker="speed: 0.5; radius: 12; changeInterval: 3500"></a-entity>
+        <a-entity gltf-model="#spider" position="3 0 8" scale="0.025 0.025 0.025" spider-animator grabbable
+            stoppable-on-grab spider-walker="speed: 0.6; radius: 10; changeInterval: 2500"></a-entity>
+        <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator grabbable
+            stoppable-on-grab spider-walker="speed: 0.4; radius: 8; changeInterval: 4000"></a-entity>
+
         <a-entity gltf-model="#scorpion" position="0 0.2 5" scale="0.3 0.3 0.3" grabbable></a-entity>
 
 
-        <!-- ========== RIG VR AVEC MAINS 3D ========== -->
-        <a-entity id="rig" position="-18 0 -9">
-            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
+        <!-- RIG VR AVEC MAINS 3D -->
+        <<a-entity id="rig" position="-18 0 -9">
+            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true" grab-system></a-camera>
 
-            <!-- Main droite: GRIP pour attraper -->
-            <a-entity id="rhand" 
-                      oculus-touch-controls="hand: right; model: false"
-                      grab-controls="hand: right; grabDistance: 5">
-                <a-entity hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"></a-entity>
+            <a-entity id="rhand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"
+                grab-controls="hand: right; grabDistance: 5"
+                simulate-hands-desktop="offset: 0.2 -0.2 -0.4; color: #ffccaa">
             </a-entity>
 
-            <!-- Main gauche: TRIGGER pour téléporter -->
-            <a-entity id="lhand" 
-                      oculus-touch-controls="hand: left; model: false"
-                      teleport-controls-custom="cameraRig: #rig; 
-                                                teleportOrigin: #camera; 
-                                                collisionEntities: .teleportable; 
-                                                curveShootingSpeed: 10; 
-                                                curveHitColor: #00ff00;
-                                                curveMissColor: #ff9900;
-                                                curveNumberPoints: 40;">
-                <a-entity hand-controls="hand: left; handModelStyle: lowPoly; color: #ffccaa"></a-entity>
+            <a-entity id="lhand" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffccaa"
+                teleport-controls-custom="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleportable;"
+                simulate-hands-desktop="offset: -0.2 -0.2 -0.4; color: #ffccaa">
             </a-entity>
         </a-entity>
         
