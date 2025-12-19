@@ -698,6 +698,13 @@
         <a-entity gltf-model="#trap_door" position="2.388 0.033 4.821" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#trap_door" position="2.388 0.247 -25.346" scale="1 1 1" rotation="0 90 0"></a-entity>
 
+        <!--market -->
+        <a-entity gltf-model="#market5" position="-52.200 0.247 -41.422" scale="4.000 4.000 4.000" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#market" position="2.388 0.247 -25.346" scale="4 4 4" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#market" position="-52.520 0.247 20.315" scale="4 4 4" rotation="0 22.197 0"></a-entity>
+        <a-entity gltf-model="#market2" position="-38.148 0.247 22.461" scale="4 4 4" rotation="0 -6.143 0"></a-entity>
+        <a-entity gltf-model="#market4" position="-38.148 0.247 22.461" scale="4 4 4" rotation="0 -6.143 0"></a-entity>
+
 
         <!-- Normal Wall House -->
         <a-entity gltf-model="#normal_wall" position="-14.358 -0.928 -44.021" scale="25.000 1 1" rotation="0 0 0"></a-entity>
@@ -709,10 +716,14 @@
 
 
         <a-assets>
+            <a-asset-item id="market5" src="../assets/modelAvatar/Market Stalls5.glb"></a-asset-item>
+            <a-asset-item id="market4" src="../assets/modelAvatar/Market Stalls4.glb"></a-asset-item>
+            <a-asset-item id="market2" src="../assets/modelAvatar/Market Stalls Compact.glb"></a-asset-item>
+            <a-asset-item id="market" src="../assets/modelAvatar/Market Stalls.glb"></a-asset-item>
             <a-asset-item id="door" src="../assets/modelAvatar/egyptian_door.glb"></a-asset-item>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
             <a-asset-item id="camel"
-                src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
+            src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
             <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
             <a-asset-item id="arch" src="../assets/modelAvatar/Arch.glb"></a-asset-item>
             <a-asset-item id="fence" src="../assets/modelAvatar/Fence Pillar.glb"></a-asset-item>
@@ -791,9 +802,7 @@
         <!-- Pioches GRABBABLE -->
         <a-entity gltf-model="#stone_pickaxe" position="4.966 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425" grabbable></a-entity>
         <a-entity gltf-model="#stone_pickaxe" position="3.090 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000" grabbable></a-entity>
-
-
-
+        
         <!-- Cercueils -->
         <a-entity gltf-model="#coffin" position="-60 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#coffin" position="-56.711 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
