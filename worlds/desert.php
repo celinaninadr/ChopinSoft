@@ -887,7 +887,7 @@
 
 
         <!-- RIG VR AVEC MAINS 3D -->
-        <<a-entity id="rig" position="-18 0 -9">
+        <a-entity id="rig" position="-18 0 -9">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true" grab-system></a-camera>
 
             <a-entity id="rhand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"
