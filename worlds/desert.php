@@ -581,6 +581,7 @@
         <!-- Assets EN PREMIER -->
         <a-assets>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
+            <a-asset-item id="stand" src="../assets/modelAvatar/Market Stand.glb"></a-asset-item>
             <a-asset-item id="camel" src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
             <a-asset-item id="camel_walk" src="../assets/modelAvatar/camel-walk.glb"></a-asset-item>
             <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
@@ -617,7 +618,9 @@
         <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #c9a66b; horizonColor: #b89968;"></a-entity>
         <a-entity light="type:ambient;intensity:0.7;color:#f4d4a8"></a-entity>
         <a-entity light="type:directional;intensity:0.4;color:#e6c288" position="1 1 0"></a-entity>
-
+        
+        <!-- stand -->
+         <a-entity gltf-model="#stand" position="-20.907 0.078 21.367" scale="1.5 1.5 1.5" rotation="0 -90.629 0"></a-entity>
         <!-- Sphinx -->
         <a-entity gltf-model="#sphynx" position="-14.976 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
         <a-entity gltf-model="#sphynx" position="-27.970 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
@@ -760,7 +763,7 @@
         <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator grabbable stoppable-on-grab
             spider-walker="speed: 0.4; radius: 8; changeInterval: 4000">
         </a-entity>
-        <a-entity gltf-model="#scorpion" position="0 0 5" scale="0.3 0.3 0.3" grabbable></a-entity>
+        <a-entity gltf-model="#scorpion" position="0 0.2 5" scale="0.3 0.3 0.3" grabbable></a-entity>
 
 
         <!-- Pièces GRABBABLE -->
@@ -788,8 +791,6 @@
         <!-- Pioches GRABBABLE -->
         <a-entity gltf-model="#stone_pickaxe" position="4.966 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425" grabbable></a-entity>
         <a-entity gltf-model="#stone_pickaxe" position="3.090 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000" grabbable></a-entity>
-        <a-entity gltf-model="#stone_pickaxe" position="4.966 0.5 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425" grabbable></a-entity>
-        <a-entity gltf-model="#stone_pickaxe" position="3.090 0.5 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000" grabbable></a-entity>
 
 
 
