@@ -527,9 +527,9 @@
 
         <a-entity gltf-model="#camel_walk" position="0.57776 1.63573 -42.6507" scale="0.05 0.05 0.05" camel-animator camel-walker="distance: 50; speed: 1"></a-entity>
         
-        <a-entity gltf-model="#spider" position="5 0 -5" scale="0.03 0.03 0.03" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.8; radius: 15; changeInterval: 2000"></a-entity>
-        <a-entity gltf-model="#spider" position="-8 0 -3" scale="0.02 0.02 0.02" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.5; radius: 12; changeInterval: 3500"></a-entity>
-        <a-entity gltf-model="#spider" position="3 0 8" scale="0.025 0.025 0.025" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.6; radius: 10; changeInterval: 2500"></a-entity>
+        <a-entity gltf-model="#spider" position="-36.400 0 -13.144" scale="0.03 0.03 0.03" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.8; radius: 15; changeInterval: 2000"></a-entity>
+        <a-entity gltf-model="#spider" position="-43.199 0.119 15.046" scale="0.02 0.02 0.02" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.5; radius: 12; changeInterval: 3500"></a-entity>
+        <a-entity gltf-model="#spider" position="-15.322 0.211 -27.038" scale="0.025 0.025 0.025" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.6; radius: 10; changeInterval: 2500"></a-entity>
         <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator grabbable stoppable-on-grab spider-walker="speed: 0.4; radius: 8; changeInterval: 4000"></a-entity>
         
         <a-entity gltf-model="#scorpion" position="0 0.2 5" scale="0.3 0.3 0.3" grabbable></a-entity>
@@ -549,6 +549,15 @@
                 <a-box color="#ff6622" width="0.04" height="0.02" depth="0.1" position="0 0 -0.03"></a-box>
             </a-entity>
         </a-entity>
+        
+                <!-- Environnement et lumière -->
+        <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #c9a66b; horizonColor: #b89968;"></a-entity>
+        <a-entity light="type:ambient;intensity:0.7;color:#f4d4a8"></a-entity>
+        <a-entity light="type:directional;intensity:0.4;color:#e6c288" position="1 1 0"></a-entity>
+
+                <!-- Environnement et lumière -->
+        <a-entity environment="preset: egypt; groundYScale: 6; fog: 0.7"></a-entity>
+        <a-entity light="type:ambient;intensity:1.0"></a-entity>
 
     </a-scene>
 </body>
