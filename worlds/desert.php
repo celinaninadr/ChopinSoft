@@ -38,6 +38,49 @@
 
     <script>
         /**
+         * COMPOSANT POUR VOIR LES MAINS SUR PC (FPS STYLE)
+         */
+        AFRAME.registerComponent('simulate-hands-desktop', {
+            schema: {
+                offset: { type: 'vec3', default: { x: 0.2, y: -0.2, z: -0.5 } },
+                color: { type: 'color', default: '#ffccaa' }
+            },
+            init: function () {
+                this.camera = document.querySelector('a-camera');
+
+                // 1. Créer un visuel temporaire (car le modèle VR ne charge pas sur PC)
+                this.dummyHand = document.createElement('a-box');
+                this.dummyHand.setAttribute('scale', '0.05 0.05 0.15');
+                this.dummyHand.setAttribute('color', this.data.color);
+                this.dummyHand.setAttribute('opacity', '0.8');
+                this.el.appendChild(this.dummyHand);
+
+                // 2. Gestion VR : Cacher le cube moche quand on entre en VR
+                this.el.sceneEl.addEventListener('enter-vr', () => {
+                    this.dummyHand.setAttribute('visible', false);
+                });
+                this.el.sceneEl.addEventListener('exit-vr', () => {
+                    this.dummyHand.setAttribute('visible', true);
+                });
+            },
+            tick: function () {
+                // Si on est en VR, on laisse le hand-controls gérer la position
+                if (this.el.sceneEl.is('vr-mode') || !this.camera) return;
+
+                // SINON (Desktop): On colle la main à la caméra avec un décalage
+                const camObj = this.camera.object3D;
+                const myObj = this.el.object3D;
+
+                myObj.position.copy(camObj.position);
+                myObj.rotation.copy(camObj.rotation);
+
+                // Appliquer le décalage (offset) pour mettre la main devant les yeux
+                myObj.translateX(this.data.offset.x);
+                myObj.translateY(this.data.offset.y);
+                myObj.translateZ(this.data.offset.z);
+            }
+        });
+        /**
          * SYSTÈME DE PHYSIQUE MAISON
          */
         AFRAME.registerComponent('simple-physics', {
@@ -832,22 +875,17 @@
             simple-physics="mass: 1.2; restitution: 0.4"></a-entity>
 
         <!-- RIG VR AVEC MAINS 3D -->
-        <a-entity id="rig" position="-18 0 -9">
-
+        <<a-entity id="rig" position="-18 0 -9">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true" grab-system></a-camera>
 
             <a-entity id="rhand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"
-                grab-controls="hand: right; grabDistance: 5">
+                grab-controls="hand: right; grabDistance: 5"
+                simulate-hands-desktop="offset: 0.2 -0.2 -0.4; color: #ffccaa">
             </a-entity>
 
             <a-entity id="lhand" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffccaa"
-                teleport-controls-custom="cameraRig: #rig; 
-                                                teleportOrigin: #camera; 
-                                                collisionEntities: .teleportable; 
-                                                curveShootingSpeed: 10; 
-                                                curveHitColor: #00ff00;
-                                                curveMissColor: #ff9900;
-                                                curveNumberPoints: 40;">
+                teleport-controls-custom="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleportable;"
+                simulate-hands-desktop="offset: -0.2 -0.2 -0.4; color: #ffccaa">
             </a-entity>
         </a-entity>
     </a-scene>
