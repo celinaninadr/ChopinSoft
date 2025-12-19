@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <title>Environnement désert - Tempête</title>
     <meta name="description" content="Environnement desert avec tempête" />
-    
+
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
 
     <script>
         /**
@@ -21,7 +23,7 @@
                 curveShootingSpeed: { type: 'number', default: 10 },
                 curveNumberPoints: { type: 'number', default: 30 },
                 curveHitColor: { type: 'color', default: '#00ff00' },
-                curveMissColor: { type: 'color', default: '#ff0000' },
+                curveMissColor: { type: 'color', default: '#ff9900' },
                 landingMaxAngle: { type: 'number', default: 45 }
             },
             init: function () {
@@ -37,13 +39,13 @@
                 this.el.addEventListener('triggerup', this.onButtonUp.bind(this));
                 this.el.addEventListener('selectstart', this.onButtonDown.bind(this));
                 this.el.addEventListener('selectend', this.onButtonUp.bind(this));
-                console.log('Teleport controls initialized');
+                console.log('✅ Teleport controls initialized');
             },
             createCurveLine: function () {
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(this.data.curveNumberPoints * 3);
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                const material = new THREE.LineBasicMaterial({ color: this.data.curveMissColor, linewidth: 2 });
+                const material = new THREE.LineBasicMaterial({ color: this.data.curveMissColor, linewidth: 3 });
                 this.curveLine = new THREE.Line(geometry, material);
                 this.curveLine.visible = false;
                 this.curveLine.frustumCulled = false;
@@ -66,9 +68,17 @@
                 this.hitMarker.setAttribute('visible', 'false');
                 this.el.sceneEl.appendChild(this.hitMarker);
             },
-            onButtonDown: function () { this.active = true; this.curveLine.visible = true; },
+            onButtonDown: function () { 
+                console.log('🎯 Trigger pressed');
+                this.active = true; 
+                this.curveLine.visible = true; 
+            },
             onButtonUp: function () {
-                if (this.active && this.hit && this.hitPoint) { this.teleport(); }
+                console.log('🎯 Trigger released');
+                if (this.active && this.hit && this.hitPoint) { 
+                    console.log('✨ Teleporting to:', this.hitPoint);
+                    this.teleport(); 
+                }
                 this.active = false;
                 this.curveLine.visible = false;
                 this.hitMarker.setAttribute('visible', 'false');
@@ -268,6 +278,7 @@
                 this.originalRotation.copy(this.el.object3D.rotation);
                 hand.object3D.attach(this.el.object3D);
                 this.el.emit('grabbed', { hand: hand });
+                console.log('✊ Objet attrapé');
             },
             release: function () {
                 if (!this.isGrabbed) return;
@@ -275,6 +286,7 @@
                 this.isGrabbed = false;
                 this.grabber = null;
                 this.el.emit('released');
+                console.log('✋ Objet relâché');
             }
         });
 
@@ -287,10 +299,17 @@
                 this.raycaster = new THREE.Raycaster();
                 this.raycaster.far = this.data.grabDistance;
                 this.createLaser();
-                const grabEvents = ['gripdown', 'squeezestart', 'abuttondown', 'xbuttondown', 'triggerdown'];
-                const releaseEvents = ['gripup', 'squeezeend', 'abuttonup', 'xbuttonup', 'triggerup'];
-                grabEvents.forEach(evt => { this.el.addEventListener(evt, () => { this.tryGrab(); }); });
-                releaseEvents.forEach(evt => { this.el.addEventListener(evt, () => { this.release(); }); });
+                const grabEvents = ['gripdown', 'squeezestart'];
+                const releaseEvents = ['gripup', 'squeezeend'];
+                grabEvents.forEach(evt => { this.el.addEventListener(evt, () => { 
+                    console.log('🤜 Grip pressed');
+                    this.tryGrab(); 
+                }); });
+                releaseEvents.forEach(evt => { this.el.addEventListener(evt, () => { 
+                    console.log('🤚 Grip released');
+                    this.release(); 
+                }); });
+                console.log('✅ Grab controls initialized for', this.data.hand, 'hand');
             },
             createLaser: function () {
                 this.laser = document.createElement('a-entity');
@@ -387,11 +406,14 @@
 
 <body>
     <a-scene fog="type: exponential; color: #dcb271; density: 0.04">
-        
+
         <a-assets>
+            <a-asset-item id="palm2" src="../assets/modelAvatar/Palm tree2.glb"></a-asset-item>
+            <a-asset-item id="palm" src="../assets/modelAvatar/Palm Tree.glb"></a-asset-item>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
             <a-asset-item id="stand" src="../assets/modelAvatar/Market Stand.glb"></a-asset-item>
-            <a-asset-item id="camel" src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
+            <a-asset-item id="camel"
+                src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
             <a-asset-item id="camel_walk" src="../assets/modelAvatar/camel-walk.glb"></a-asset-item>
             <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
             <a-asset-item id="arch" src="../assets/modelAvatar/Arch.glb"></a-asset-item>
@@ -417,51 +439,65 @@
             <a-asset-item id="eye_of_horus" src="../assets/modelAvatar/eye_of_horus_educational.glb"></a-asset-item>
             <a-asset-item id="door" src="../assets/modelAvatar/egyptian_door.glb"></a-asset-item>
             <a-asset-item id="normal_wall" src="../assets/modelAvatar/Normal Wall.glb"></a-asset-item>
-            
+
             <a-asset-item id="market5" src="../assets/modelAvatar/Market Stalls5.glb"></a-asset-item>
             <a-asset-item id="market4" src="../assets/modelAvatar/Market Stalls4.glb"></a-asset-item>
             <a-asset-item id="market2" src="../assets/modelAvatar/Market Stalls Compact.glb"></a-asset-item>
             <a-asset-item id="market" src="../assets/modelAvatar/Market Stalls.glb"></a-asset-item>
-            
-            <a-asset-item id="spider" src="../assets/modelAvatar/animated_low-poly_spider_game-ready.glb"></a-asset-item>
+
+            <a-asset-item id="spider"
+                src="../assets/modelAvatar/animated_low-poly_spider_game-ready.glb"></a-asset-item>
             <a-asset-item id="scorpion" src="../assets/modelAvatar/scorpion.glb"></a-asset-item>
         </a-assets>
 
-        <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false" material="opacity: 0"></a-plane>
+        <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false"
+            material="opacity: 0"></a-plane>
 
-        <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #dcb271; horizonColor: #dcb271; lighting: none"></a-entity>
-        
+        <a-entity
+            environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #dcb271; horizonColor: #dcb271; lighting: none"></a-entity>
+
         <a-entity light="type: hemisphere; color: #fff5e6; groundColor: #dcb271; intensity: 0.6"></a-entity>
-        
         <a-entity light="type: directional; intensity: 1.2; color: #fff0dd" position="-0.5 1 0.5"></a-entity>
-        
+
         <a-entity gltf-model="#pyramids" position="-45 0 45" scale="100 100 100" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#pyramid" position="35 -10 -7" scale="8 8 8" rotation="0 133 0"></a-entity>
-        <a-entity gltf-model="#roman_temple_main" position="1.000 0 -40.433" scale="0.0085 0.0085 0.0085" rotation="0 360 0"></a-entity>
+        <a-entity gltf-model="#roman_temple_main" position="1.000 0 -40.433" scale="0.0085 0.0085 0.0085"
+            rotation="0 360 0"></a-entity>
 
-        <a-entity gltf-model="#door" position="6.849 2.943 -10.000" scale="4 4 4" rotation="-30.374 -93.378 1.064"></a-entity>
+        <a-entity gltf-model="#door" position="6.849 2.943 -10.000" scale="4 4 4"
+            rotation="-30.374 -93.378 1.064"></a-entity>
         <a-entity gltf-model="#arch" position="4 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#arch" position="2 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#arch" position="0 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#arch" position="-2 0 -10" scale="1 1 1" rotation="0 90 0"></a-entity>
 
-        <a-entity gltf-model="#normal_wall" position="-14.358 -0.928 -44.021" scale="25.000 1 1" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#normal_wall" position="-58.924 -0.928 2.483" scale="25.000 1 1" rotation="0 90 0"></a-entity>
-        <a-entity gltf-model="#normal_wall" position="-21.640 -0.918 27.845" scale="25.000 1 1" rotation="0 180 0"></a-entity>
-        <a-entity gltf-model="#normal_wall" position="24.173 -0.928 34.348" scale="8.105 1 1" rotation="0 -89.671 0"></a-entity>
-        <a-entity gltf-model="#normal_wall" position="24.173 -0.928 -48.136 " scale="8.105 1 1" rotation="0 -89.671 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="-14.358 -0.928 -44.021" scale="25.000 1 1"
+            rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="-58.924 -0.928 2.483" scale="25.000 1 1"
+            rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="-21.640 -0.918 27.845" scale="25.000 1 1"
+            rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="24.173 -0.928 34.348" scale="8.105 1 1"
+            rotation="0 -89.671 0"></a-entity>
+        <a-entity gltf-model="#normal_wall" position="24.173 -0.928 -48.136 " scale="8.105 1 1"
+            rotation="0 -89.671 0"></a-entity>
 
         <a-entity gltf-model="#roman_temple" position="-15 2.6 23" scale="7.5 7.5 7.5" rotation="0 180 0"></a-entity>
         <a-entity gltf-model="#roman_temple" position="-28 2.6 23" scale="7.5 7.5 7.5" rotation="0 180 0"></a-entity>
         <a-entity gltf-model="#roman_temple" position="-15 2.6 -40" scale="7.5 7.5 7.5" rotation="0 360 0"></a-entity>
         <a-entity gltf-model="#roman_temple" position="-28 2.6 -40" scale="7.5 7.5 7.5" rotation="0 360 0"></a-entity>
 
-        <a-entity gltf-model="#tent" position="-17.268 1.986 -9.3" scale="2.5105 2.5105 2.5105" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#tent" position="-17.268 1.986 -9.3" scale="2.5105 2.5105 2.5105"
+            rotation="0 180 0"></a-entity>
 
-        <a-entity gltf-model="#sphynx" position="-14.976 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
-        <a-entity gltf-model="#sphynx" position="-27.970 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
-        <a-entity gltf-model="#sphynx" position="-27.970 5.313 -38.222" scale="1.5 1.5 1.5" rotation="0 180.000 0"></a-entity>
-        <a-entity gltf-model="#sphynx" position="-15.029 5.313 -38.222" scale="1.5 1.5 1.5" rotation="0 180.000 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-14.976 5.313 21.367" scale="1.5 1.5 1.5"
+            rotation="0 -0.976 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-27.970 5.313 21.367" scale="1.5 1.5 1.5"
+            rotation="0 -0.976 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-27.970 5.313 -38.222" scale="1.5 1.5 1.5"
+            rotation="0 180.000 0"></a-entity>
+        <a-entity gltf-model="#sphynx" position="-15.029 5.313 -38.222" scale="1.5 1.5 1.5"
+            rotation="0 180.000 0"></a-entity>
 
         <a-entity gltf-model="#anubis" position="5 3.034 -2" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
         <a-entity gltf-model="#anubis" position="5 3.034 -20" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
@@ -472,9 +508,20 @@
         <a-entity gltf-model="#fence" position="-60.288 0.601 7.779" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#fence" position="-54.532 0.372 7.500" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#fence" position="-61.997 -0.090 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#fence" position="-60.240 -0.090 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
 
-        <a-entity gltf-model="#stand" position="-20.907 0.078 21.367" scale="1.5 1.5 1.5" rotation="0 -90.629 0"></a-entity>
+        <a-entity gltf-model="#palm2" position="-6.918 -0.090 -29.568" scale="0.5 0.5 0.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm2" position="-6.918 -0.090 10.884" scale="0.5 0.5 0.5" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#palm" position="-37.470 -0.090 -5.607" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-51.193 -0.090  -15.804" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-31.675 -0.090 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-45.189 -0.090 7.933" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-29.481 -0.090 -2.427" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-22.903 -0.090 -23.227" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-24.509 -0.090 7.426" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#stand" position="-20.907 0.078 21.367" scale="1.5 1.5 1.5"
+            rotation="0 -90.629 0"></a-entity>
         <a-entity gltf-model="#market5" position="-52.200 0.247 -41.422" scale="4 4 4" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#market" position="2.388 0.247 -25.346" scale="4 4 4" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#market" position="-52.520 0.247 20.315" scale="4 4 4" rotation="0 22.197 0"></a-entity>
@@ -484,12 +531,13 @@
         <a-entity gltf-model="#sarcophagus" position="31.956 -6.141 -15.000" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#coffin" position="-60 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#coffin" position="-56.711 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#coffin" position="-56.711 0 4.535" scale="1 1 1" rotation="0 0 0"></a-entity>        
+        <a-entity gltf-model="#coffin" position="-56.711 0 4.535" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#coffin" position="-59.493 0 4.535" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#coffin" position="-59.493 0 -5.713" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#coffin" position="-57.820 0 -5.713" scale="1 1 1" rotation="0 0 0"></a-entity>
 
-        <a-entity gltf-model="#chest_gold" position="-16.659 0.296 -7.821" scale="0.5 0.5 0.5" rotation="0 180.030 0"></a-entity>
+        <a-entity gltf-model="#chest_gold" position="-16.659 0.296 -7.821" scale="0.5 0.5 0.5"
+            rotation="0 180.030 0"></a-entity>
         <a-entity gltf-model="#chest_1" position="-15 0.5 25" scale="0.8 0.8 0.8" rotation="0 180 0"></a-entity>
         <a-entity gltf-model="#chest_1" position="-28 0.5 25" scale="0.8 0.8 0.8" rotation="0 180 0"></a-entity>
         <a-entity gltf-model="#chest_1" position="-15 0.5 -42" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
@@ -504,7 +552,7 @@
         <a-entity gltf-model="#torture_device" position="-45.137 0.5 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#torture_device" position="-40.320 0.2 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#torture_device" position="-35.320 0.046 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
-        
+
         <a-entity gltf-model="#spade" position="-15 0.5 20" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#spade" position="-28 0.5 20" scale="1 1 1" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#spade" position="-15 0.5 -37" scale="1 1 1" rotation="0 0 0"></a-entity>
@@ -513,17 +561,29 @@
         <a-entity gltf-model="#trap_door" position="2.388 0.033 4.821" scale="1 1 1" rotation="0 90 0"></a-entity>
         <a-entity gltf-model="#trap_door" position="2.388 0.247 -25.346" scale="1 1 1" rotation="0 90 0"></a-entity>
 
-        <a-entity gltf-model="#stone_pickaxe" position="4.966 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425" grabbable></a-entity>
-        <a-entity gltf-model="#stone_pickaxe" position="3.090 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000" grabbable></a-entity>
+        <a-entity gltf-model="#stone_pickaxe" position="4.966 -0.022 2.221" scale="0.5 0.5 0.5"
+            rotation="90.000 0 -71.425" grabbable></a-entity>
+        <a-entity gltf-model="#stone_pickaxe" position="3.090 -0.022 2.221" scale="0.5 0.5 0.5"
+            rotation="90.000 0 100.000" grabbable></a-entity>
 
         <a-entity gltf-model="#coin" position="2 0 2" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.011 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.131 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.141 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.151 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.161 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.171 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
-        <a-entity gltf-model="#coin" position="-59.820 1.181 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0" grabbable></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.011 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            grabbable></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.131 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            grabbable></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.141 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            grabbable></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.151 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            grabbable></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.161 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            grabbable></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.171 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            grabbable></a-entity>
+        <a-entity gltf-model="#coin" position="-59.820 1.181 -6.418" scale="0.25 0.25 0.25" rotation="0 0 0"
+            grabbable></a-entity>
+
+        <a-entity gltf-model="#camel_walk" position="0.57776 1.63573 -42.6507" scale="0.05 0.05 0.05" camel-animator
+            camel-walker="distance: 50; speed: 1"></a-entity>
 
         <a-entity gltf-model="#camel_walk" position="0.57776 1.63573 -42.6507" scale="0.05 0.05 0.05" camel-animator camel-walker="distance: 50; speed: 1"></a-entity>
         
@@ -534,19 +594,29 @@
         
         <a-entity gltf-model="#scorpion" position="0 0.2 5" scale="0.3 0.3 0.3" grabbable></a-entity>
 
+
+        <!-- ========== RIG VR AVEC MAINS 3D ========== -->
         <a-entity id="rig" position="-18 0 -9">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
 
-            <a-entity id="rhand"
-                oculus-touch-controls="hand: right; model: false"
-                grab-controls="hand: right; grabDistance: 5">
-                <a-box color="#2266ff" width="0.04" height="0.02" depth="0.1" position="0 0 -0.03"></a-box>
+            <!-- Main droite: GRIP pour attraper -->
+            <a-entity id="rhand" 
+                      oculus-touch-controls="hand: right; model: false"
+                      grab-controls="hand: right; grabDistance: 5">
+                <a-entity hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"></a-entity>
             </a-entity>
 
-            <a-entity id="lhand"
-                oculus-touch-controls="hand: left; model: false"
-                teleport-controls-custom="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleportable; button: trigger; curveShootingSpeed: 15">
-                <a-box color="#ff6622" width="0.04" height="0.02" depth="0.1" position="0 0 -0.03"></a-box>
+            <!-- Main gauche: TRIGGER pour téléporter -->
+            <a-entity id="lhand" 
+                      oculus-touch-controls="hand: left; model: false"
+                      teleport-controls-custom="cameraRig: #rig; 
+                                                teleportOrigin: #camera; 
+                                                collisionEntities: .teleportable; 
+                                                curveShootingSpeed: 10; 
+                                                curveHitColor: #00ff00;
+                                                curveMissColor: #ff9900;
+                                                curveNumberPoints: 40;">
+                <a-entity hand-controls="hand: left; handModelStyle: lowPoly; color: #ffccaa"></a-entity>
             </a-entity>
         </a-entity>
         
@@ -561,4 +631,5 @@
 
     </a-scene>
 </body>
+
 </html>
