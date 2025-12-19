@@ -386,7 +386,7 @@
 </head>
 
 <body>
-    <a-scene fog="type: exponential; color: #c9a66b; density: 0.025">
+    <a-scene fog="type: exponential; color: #dcb271; density: 0.04">
         
         <a-assets>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
@@ -429,10 +429,12 @@
 
         <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false" material="opacity: 0"></a-plane>
 
-        <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #c9a66b; horizonColor: #b89968;"></a-entity>
-        <a-entity light="type:ambient;intensity:0.8;color:#f4d4a8"></a-entity>
-        <a-entity light="type:directional;intensity:0.5;color:#e6c288" position="1 1 0"></a-entity>
-
+        <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #dcb271; horizonColor: #dcb271; lighting: none"></a-entity>
+        
+        <a-entity light="type: hemisphere; color: #fff5e6; groundColor: #dcb271; intensity: 0.6"></a-entity>
+        
+        <a-entity light="type: directional; intensity: 1.2; color: #fff0dd" position="-0.5 1 0.5"></a-entity>
+        
         <a-entity gltf-model="#pyramids" position="-45 0 45" scale="100 100 100" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#pyramid" position="35 -10 -7" scale="8 8 8" rotation="0 133 0"></a-entity>
         <a-entity gltf-model="#roman_temple_main" position="1.000 0 -40.433" scale="0.0085 0.0085 0.0085" rotation="0 360 0"></a-entity>
