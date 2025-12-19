@@ -694,6 +694,8 @@
     <a-scene fog="type: exponential; color: #dcb271; density: 0.04">
 
         <a-assets>
+            <a-asset-item id="palm2" src="../assets/modelAvatar/Palm tree2.glb"></a-asset-item>
+            <a-asset-item id="palm" src="../assets/modelAvatar/Palm Tree.glb"></a-asset-item>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
             <a-asset-item id="stand" src="../assets/modelAvatar/Market Stand.glb"></a-asset-item>
             <a-asset-item id="camel"
@@ -792,7 +794,17 @@
         <a-entity gltf-model="#fence" position="-60.288 0.601 7.779" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#fence" position="-54.532 0.372 7.500" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
         <a-entity gltf-model="#fence" position="-61.997 -0.090 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
-        <a-entity gltf-model="#fence" position="-60.240 -0.090 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#palm2" position="-6.918 -0.090 -29.568" scale="0.5 0.5 0.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm2" position="-6.918 -0.090 10.884" scale="0.5 0.5 0.5" rotation="0 0 0"></a-entity>
+
+        <a-entity gltf-model="#palm" position="-37.470 -0.090 -5.607" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-51.193 -0.090  -15.804" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-31.675 -0.090 -10.519" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-45.189 -0.090 7.933" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-29.481 -0.090 -2.427" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-22.903 -0.090 -23.227" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#palm" position="-24.509 -0.090 7.426" scale="1.5 1.5 1.5" rotation="0 0 0"></a-entity>
 
         <a-entity gltf-model="#stand" position="-20.907 0.078 21.367" scale="1.5 1.5 1.5"
             rotation="0 -90.629 0"></a-entity>
@@ -862,17 +874,17 @@
         <a-entity gltf-model="#camel_walk" position="0.57776 1.63573 -42.6507" scale="0.05 0.05 0.05" camel-animator
             camel-walker="distance: 50; speed: 1"></a-entity>
 
-        <!-- Araignées avec ancien système grabbable pour VR -->
         <a-entity gltf-model="#spider" position="5 0 -5" scale="0.03 0.03 0.03" spider-animator grabbable
             stoppable-on-grab spider-walker="speed: 0.8; radius: 15; changeInterval: 2000"></a-entity>
         <a-entity gltf-model="#spider" position="-8 0 -3" scale="0.02 0.02 0.02" spider-animator grabbable
             stoppable-on-grab spider-walker="speed: 0.5; radius: 12; changeInterval: 3500"></a-entity>
         <a-entity gltf-model="#spider" position="3 0 8" scale="0.025 0.025 0.025" spider-animator grabbable
             stoppable-on-grab spider-walker="speed: 0.6; radius: 10; changeInterval: 2500"></a-entity>
+        <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator grabbable
+            stoppable-on-grab spider-walker="speed: 0.4; radius: 8; changeInterval: 4000"></a-entity>
 
-        <!-- Scorpion avec physique -->
-        <a-entity gltf-model="#scorpion" position="0 2 5" scale="0.3 0.3 0.3"
-            simple-physics="mass: 1.2; restitution: 0.4"></a-entity>
+        <a-entity gltf-model="#scorpion" position="0 0.2 5" scale="0.3 0.3 0.3" grabbable></a-entity>
+
 
         <!-- RIG VR AVEC MAINS 3D -->
         <a-entity id="rig" position="-18 0 -9">
@@ -888,6 +900,16 @@
                 simulate-hands-desktop="offset: -0.2 -0.2 -0.4; color: #ffccaa">
             </a-entity>
         </a-entity>
+        
+                <!-- Environnement et lumière -->
+        <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #c9a66b; horizonColor: #b89968;"></a-entity>
+        <a-entity light="type:ambient;intensity:0.7;color:#f4d4a8"></a-entity>
+        <a-entity light="type:directional;intensity:0.4;color:#e6c288" position="1 1 0"></a-entity>
+
+                <!-- Environnement et lumière -->
+        <a-entity environment="preset: egypt; groundYScale: 6; fog: 0.7"></a-entity>
+        <a-entity light="type:ambient;intensity:1.0"></a-entity>
+
     </a-scene>
 </body>
 
