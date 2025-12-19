@@ -6,7 +6,6 @@
     <meta name="description" content="Environnement desert avec tempête" />
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
 
     <script>
         /**
@@ -614,81 +613,6 @@
 
         <!-- Sol invisible pour téléportation -->
         <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false" material="opacity: 0"></a-plane>
-
-        <!-- Système de particules pour la tempête de sable - couche principale -->
-        <a-entity 
-            position="0 5 0"
-            particle-system="
-                preset: dust;
-                color: #d2a679, #c9a66b, #b89968;
-                particleCount: 2000;
-                maxAge: 8;
-                size: 3, 6;
-                velocityValue: 4 2 4;
-                velocitySpread: 6 2 6;
-                accelerationValue: 2 0 0;
-                accelerationSpread: 3 0 3;
-                opacity: 0.4, 0.1;
-                blending: 2;
-                texture: https://cdn.aframe.io/examples/particle-system/dust.png;
-            ">
-        </a-entity>
-
-        <!-- Couche secondaire de tempête (plus haute et plus rapide) -->
-        <a-entity 
-            position="0 12 0"
-            particle-system="
-                preset: dust;
-                color: #c9a66b, #b89968;
-                particleCount: 1500;
-                maxAge: 6;
-                size: 2, 5;
-                velocityValue: 8 1 8;
-                velocitySpread: 8 1 8;
-                accelerationValue: 3 0 0;
-                accelerationSpread: 4 0 4;
-                opacity: 0.3, 0.05;
-                blending: 2;
-                texture: https://cdn.aframe.io/examples/particle-system/dust.png;
-            ">
-        </a-entity>
-
-        <!-- Tourbillons de sable au sol -->
-        <a-entity 
-            position="10 0.5 5"
-            particle-system="
-                preset: dust;
-                color: #d2a679;
-                particleCount: 800;
-                maxAge: 4;
-                size: 2, 4;
-                velocityValue: 3 3 3;
-                velocitySpread: 2 2 2;
-                rotationAxis: y;
-                rotationAngle: 180;
-                opacity: 0.5, 0.1;
-                blending: 2;
-                texture: https://cdn.aframe.io/examples/particle-system/dust.png;
-            ">
-        </a-entity>
-
-        <a-entity 
-            position="-15 0.5 -10"
-            particle-system="
-                preset: dust;
-                color: #d2a679;
-                particleCount: 800;
-                maxAge: 4;
-                size: 2, 4;
-                velocityValue: 3 3 3;
-                velocitySpread: 2 2 2;
-                rotationAxis: y;
-                rotationAngle: -180;
-                opacity: 0.5, 0.1;
-                blending: 2;
-                texture: https://cdn.aframe.io/examples/particle-system/dust.png;
-            ">
-        </a-entity>
 
         <!-- Environnement et lumière -->
         <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #c9a66b; horizonColor: #b89968;"></a-entity>
