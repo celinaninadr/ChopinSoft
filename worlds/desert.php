@@ -6,7 +6,6 @@
     <meta name="description" content="Environnement desert avec tempête" />
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
 
     <script>
         /**
@@ -402,177 +401,159 @@
             }
         });
 
+
         /**
-         * Composant grab-controls pour Oculus Rift CV1
-         * Bouton: GRIP (bouton latéral) pour attraper
+         * Composant grab-controls simplifié pour Quest 1
+         * Boutons: GRIP ou bouton A pour attraper
          */
         AFRAME.registerComponent('grab-controls', {
             schema: {
                 hand: { type: 'string', default: 'right' },
-                grabDistance: { type: 'number', default: 3 }
+                grabDistance: { type: 'number', default: 5 }
             },
 
             init: function () {
                 this.grabbedObject = null;
-                this.raycaster = new THREE.Raycaster();
-                this.raycaster.far = this.data.grabDistance;
                 this.hoveredObject = null;
                 this.isGrabbing = false;
-                this.controllerConnected = false;
+                
+                // Créer le raycaster
+                this.raycaster = new THREE.Raycaster();
+                this.raycaster.far = this.data.grabDistance;
                 
                 // Créer le laser visuel
                 this.createLaser();
                 
-                // Attendre que le contrôleur soit connecté
-                this.el.addEventListener('controllerconnected', (e) => {
-                    console.log('Controller connected:', e.detail.name);
-                    this.controllerConnected = true;
-                    this.setupControllerEvents();
+                // Écouter TOUS les événements possibles
+                const grabEvents = ['gripdown', 'squeezestart', 'abuttondown', 'xbuttondown', 'triggerdown'];
+                const releaseEvents = ['gripup', 'squeezeend', 'abuttonup', 'xbuttonup', 'triggerup'];
+                
+                grabEvents.forEach(evt => {
+                    this.el.addEventListener(evt, () => {
+                        console.log('[GRAB] Event:', evt);
+                        this.tryGrab();
+                    });
                 });
                 
-                // Setup immédiat au cas où
-                this.setupControllerEvents();
+                releaseEvents.forEach(evt => {
+                    this.el.addEventListener(evt, () => {
+                        console.log('[GRAB] Release event:', evt);
+                        this.release();
+                    });
+                });
                 
-                console.log('Grab controls init for', this.data.hand);
-            },
-            
-            setupControllerEvents: function() {
-                // Événements Oculus Touch pour GRIP
-                this.el.addEventListener('gripdown', this.onGrabStart.bind(this));
-                this.el.addEventListener('gripup', this.onGrabEnd.bind(this));
-                
-                // Alternative: utiliser trigger si grip ne marche pas
-                // this.el.addEventListener('triggerdown', this.onGrabStart.bind(this));
-                // this.el.addEventListener('triggerup', this.onGrabEnd.bind(this));
-                
-                // Événements génériques WebXR
-                this.el.addEventListener('selectstart', this.onGrabStart.bind(this));
-                this.el.addEventListener('selectend', this.onGrabEnd.bind(this));
-                this.el.addEventListener('squeezestart', this.onGrabStart.bind(this));
-                this.el.addEventListener('squeezeend', this.onGrabEnd.bind(this));
+                console.log('[GRAB] Initialized for', this.data.hand);
             },
 
             createLaser: function () {
-                // Conteneur pour le laser
-                this.laserContainer = document.createElement('a-entity');
-                
-                // Ligne du laser
-                const laserLine = document.createElement('a-entity');
-                laserLine.setAttribute('geometry', {
+                // Ligne visible
+                this.laser = document.createElement('a-entity');
+                this.laser.setAttribute('geometry', {
                     primitive: 'cylinder',
-                    radius: 0.002,
+                    radius: 0.005,
                     height: this.data.grabDistance,
-                    segmentsRadial: 6
+                    segmentsRadial: 8
                 });
-                laserLine.setAttribute('material', {
+                this.laser.setAttribute('material', {
                     color: '#00aaff',
-                    opacity: 0.6,
-                    transparent: true
+                    opacity: 0.8,
+                    shader: 'flat'
                 });
-                laserLine.setAttribute('position', '0 0 -' + (this.data.grabDistance / 2));
-                laserLine.setAttribute('rotation', '90 0 0');
-                laserLine.className = 'laser-line';
-                this.laserContainer.appendChild(laserLine);
-                this.laserLine = laserLine;
+                this.laser.setAttribute('position', '0 0 -' + (this.data.grabDistance / 2));
+                this.laser.setAttribute('rotation', '90 0 0');
+                this.el.appendChild(this.laser);
                 
-                // Point de visée
-                const hitPoint = document.createElement('a-sphere');
-                hitPoint.setAttribute('radius', '0.02');
-                hitPoint.setAttribute('color', '#00aaff');
-                hitPoint.setAttribute('position', '0 0 -' + this.data.grabDistance);
-                hitPoint.className = 'laser-hit';
-                this.laserContainer.appendChild(hitPoint);
-                this.laserHitPoint = hitPoint;
-                
-                this.el.appendChild(this.laserContainer);
-            },
-            
-            updateLaser: function(distance, isHovering) {
-                const color = isHovering ? '#00ff00' : '#00aaff';
-                const dist = distance || this.data.grabDistance;
-                
-                this.laserLine.setAttribute('geometry', 'height', dist);
-                this.laserLine.setAttribute('position', '0 0 -' + (dist / 2));
-                this.laserLine.setAttribute('material', 'color', color);
-                this.laserHitPoint.setAttribute('position', '0 0 -' + dist);
-                this.laserHitPoint.setAttribute('color', color);
+                // Point au bout plus gros
+                this.hitSphere = document.createElement('a-sphere');
+                this.hitSphere.setAttribute('radius', '0.05');
+                this.hitSphere.setAttribute('color', '#00aaff');
+                this.hitSphere.setAttribute('material', 'shader: flat');
+                this.hitSphere.setAttribute('position', '0 0 -' + this.data.grabDistance);
+                this.el.appendChild(this.hitSphere);
             },
 
-            onGrabStart: function (evt) {
+            tryGrab: function () {
                 if (this.isGrabbing) return;
                 
-                console.log('GRAB START:', evt.type, 'hovering:', !!this.hoveredObject);
+                console.log('[GRAB] Try grab, hovered:', this.hoveredObject ? 'YES' : 'NO');
                 
                 if (this.hoveredObject) {
                     const grabbable = this.hoveredObject.components.grabbable;
-                    if (grabbable && !grabbable.isGrabbed) {
+                    if (grabbable) {
+                        console.log('[GRAB] Grabbing object!');
                         grabbable.grab(this.el);
                         this.grabbedObject = this.hoveredObject;
                         this.isGrabbing = true;
-                        this.laserContainer.setAttribute('visible', false);
-                        console.log('Object grabbed!');
+                        this.laser.setAttribute('visible', false);
+                        this.hitSphere.setAttribute('visible', false);
                     }
                 }
             },
 
-            onGrabEnd: function (evt) {
+            release: function () {
                 if (!this.isGrabbing) return;
                 
-                console.log('GRAB END:', evt.type);
+                console.log('[GRAB] Releasing');
                 
                 if (this.grabbedObject) {
                     const grabbable = this.grabbedObject.components.grabbable;
                     if (grabbable) {
                         grabbable.release();
                     }
-                    this.grabbedObject = null;
                 }
                 
+                this.grabbedObject = null;
                 this.isGrabbing = false;
-                this.laserContainer.setAttribute('visible', true);
+                this.laser.setAttribute('visible', true);
+                this.hitSphere.setAttribute('visible', true);
             },
 
             tick: function () {
                 if (this.isGrabbing) return;
                 
-                // Position et direction du contrôleur
-                const controllerPos = new THREE.Vector3();
-                const controllerDir = new THREE.Vector3(0, 0, -1);
+                // Direction du contrôleur
+                const pos = new THREE.Vector3();
+                const dir = new THREE.Vector3(0, 0, -1);
                 
-                this.el.object3D.getWorldPosition(controllerPos);
-                const quaternion = new THREE.Quaternion();
-                this.el.object3D.getWorldQuaternion(quaternion);
-                controllerDir.applyQuaternion(quaternion);
+                this.el.object3D.getWorldPosition(pos);
+                dir.applyQuaternion(this.el.object3D.quaternion);
                 
-                this.raycaster.set(controllerPos, controllerDir.normalize());
+                this.raycaster.set(pos, dir.normalize());
                 
                 // Chercher les objets grabbable
                 const grabbables = document.querySelectorAll('[grabbable]');
-                let closestHit = null;
+                let closest = null;
                 let closestDist = Infinity;
                 
                 grabbables.forEach(entity => {
                     const mesh = entity.getObject3D('mesh');
                     if (!mesh) return;
                     
-                    const intersects = this.raycaster.intersectObject(mesh, true);
-                    if (intersects.length > 0 && intersects[0].distance < closestDist) {
-                        closestDist = intersects[0].distance;
-                        closestHit = { entity: entity, distance: closestDist };
+                    const hits = this.raycaster.intersectObject(mesh, true);
+                    if (hits.length > 0 && hits[0].distance < closestDist) {
+                        closestDist = hits[0].distance;
+                        closest = entity;
                     }
                 });
                 
-                // Mettre à jour
-                if (closestHit && closestHit.distance <= this.data.grabDistance) {
-                    this.hoveredObject = closestHit.entity;
-                    this.updateLaser(closestHit.distance, true);
+                // Mise à jour visuelle
+                if (closest && closestDist <= this.data.grabDistance) {
+                    this.hoveredObject = closest;
+                    this.laser.setAttribute('material', 'color', '#00ff00');
+                    this.hitSphere.setAttribute('color', '#00ff00');
+                    this.laser.setAttribute('geometry', 'height', closestDist);
+                    this.laser.setAttribute('position', '0 0 -' + (closestDist / 2));
+                    this.hitSphere.setAttribute('position', '0 0 -' + closestDist);
                 } else {
                     this.hoveredObject = null;
-                    this.updateLaser(this.data.grabDistance, false);
+                    this.laser.setAttribute('material', 'color', '#00aaff');
+                    this.hitSphere.setAttribute('color', '#00aaff');
+                    this.laser.setAttribute('geometry', 'height', this.data.grabDistance);
+                    this.laser.setAttribute('position', '0 0 -' + (this.data.grabDistance / 2));
+                    this.hitSphere.setAttribute('position', '0 0 -' + this.data.grabDistance);
                 }
             }
         });
-
         /**
          * Modification du spider-walker pour s'arrêter quand attrapé
          */
@@ -600,6 +581,7 @@
         <!-- Assets EN PREMIER -->
         <a-assets>
             <a-asset-item id="sphynx" src="../assets/modelAvatar/sphynx.glb"></a-asset-item>
+            <a-asset-item id="stand" src="../assets/modelAvatar/Market Stand.glb"></a-asset-item>
             <a-asset-item id="camel" src="../assets/modelAvatar/low_poly_western_camel_camelops_hesternus.glb"></a-asset-item>
             <a-asset-item id="camel_walk" src="../assets/modelAvatar/camel-walk.glb"></a-asset-item>
             <a-asset-item id="anubis" src="../assets/modelAvatar/Anubis Statue.glb"></a-asset-item>
@@ -627,93 +609,18 @@
             <!-- ASSETS MANQUANTS AJOUTÉS -->
             <a-asset-item id="spider" src="../assets/modelAvatar/animated_low-poly_spider_game-ready.glb"></a-asset-item>
             <a-asset-item id="scorpion" src="../assets/modelAvatar/scorpion.glb"></a-asset-item>
-            <a-asset-item id="house" src="../assets/modelAvatar/House.glb"></a-asset-item>
-            <a-asset-item id="house2" src="../assets/modelAvatar/house2.glb"></a-asset-item>
         </a-assets>
 
         <!-- Sol invisible pour téléportation -->
         <a-plane class="teleportable" rotation="-90 0 0" width="200" height="200" position="0 0.01 0" visible="false" material="opacity: 0"></a-plane>
 
-        <!-- Système de particules pour la tempête de sable - couche principale -->
-        <a-entity 
-            position="0 5 0"
-            particle-system="
-                preset: dust;
-                color: #d2a679, #c9a66b, #b89968;
-                particleCount: 2000;
-                maxAge: 8;
-                size: 3, 6;
-                velocityValue: 4 2 4;
-                velocitySpread: 6 2 6;
-                accelerationValue: 2 0 0;
-                accelerationSpread: 3 0 3;
-                opacity: 0.4, 0.1;
-                blending: 2;
-                texture: https://cdn.aframe.io/examples/particle-system/dust.png;
-            ">
-        </a-entity>
-
-        <!-- Couche secondaire de tempête (plus haute et plus rapide) -->
-        <a-entity 
-            position="0 12 0"
-            particle-system="
-                preset: dust;
-                color: #c9a66b, #b89968;
-                particleCount: 1500;
-                maxAge: 6;
-                size: 2, 5;
-                velocityValue: 8 1 8;
-                velocitySpread: 8 1 8;
-                accelerationValue: 3 0 0;
-                accelerationSpread: 4 0 4;
-                opacity: 0.3, 0.05;
-                blending: 2;
-                texture: https://cdn.aframe.io/examples/particle-system/dust.png;
-            ">
-        </a-entity>
-
-        <!-- Tourbillons de sable au sol -->
-        <a-entity 
-            position="10 0.5 5"
-            particle-system="
-                preset: dust;
-                color: #d2a679;
-                particleCount: 800;
-                maxAge: 4;
-                size: 2, 4;
-                velocityValue: 3 3 3;
-                velocitySpread: 2 2 2;
-                rotationAxis: y;
-                rotationAngle: 180;
-                opacity: 0.5, 0.1;
-                blending: 2;
-                texture: https://cdn.aframe.io/examples/particle-system/dust.png;
-            ">
-        </a-entity>
-
-        <a-entity 
-            position="-15 0.5 -10"
-            particle-system="
-                preset: dust;
-                color: #d2a679;
-                particleCount: 800;
-                maxAge: 4;
-                size: 2, 4;
-                velocityValue: 3 3 3;
-                velocitySpread: 2 2 2;
-                rotationAxis: y;
-                rotationAngle: -180;
-                opacity: 0.5, 0.1;
-                blending: 2;
-                texture: https://cdn.aframe.io/examples/particle-system/dust.png;
-            ">
-        </a-entity>
-
         <!-- Environnement et lumière -->
         <a-entity environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #c9a66b; horizonColor: #b89968;"></a-entity>
         <a-entity light="type:ambient;intensity:0.7;color:#f4d4a8"></a-entity>
         <a-entity light="type:directional;intensity:0.4;color:#e6c288" position="1 1 0"></a-entity>
-
+        
+        <!-- stand -->
+         <a-entity gltf-model="#stand" position="-20.907 0.078 21.367" scale="1.5 1.5 1.5" rotation="0 -90.629 0"></a-entity>
         <!-- Sphinx -->
         <a-entity gltf-model="#sphynx" position="-14.976 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
         <a-entity gltf-model="#sphynx" position="-27.970 5.313 21.367" scale="1.5 1.5 1.5" rotation="0 -0.976 0"></a-entity>
@@ -844,14 +751,19 @@
         </a-entity>
         <a-entity gltf-model="#anubis" position="5 3.034 -2" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
         <a-entity gltf-model="#anubis" position="5 3.034 -20" scale="0.5 0.5 0.5" rotation="0 180 0"></a-entity>
+        <a-entity gltf-model="#spider" position="5 0 -5" scale="0.03 0.03 0.03" spider-animator grabbable stoppable-on-grab
+            spider-walker="speed: 0.8; radius: 15; changeInterval: 2000">
         </a-entity>
-        <a-entity gltf-model="#spider" position="3 0 8" scale="0.025 0.025 0.025" spider-animator
+        <a-entity gltf-model="#spider" position="-8 0 -3" scale="0.02 0.02 0.02" spider-animator grabbable stoppable-on-grab
+            spider-walker="speed: 0.5; radius: 12; changeInterval: 3500">
+        </a-entity>
+        <a-entity gltf-model="#spider" position="3 0 8" scale="0.025 0.025 0.025" spider-animator grabbable stoppable-on-grab
             spider-walker="speed: 0.6; radius: 10; changeInterval: 2500">
         </a-entity>
-        <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator
+        <a-entity gltf-model="#spider" position="-5 0 10" scale="0.04 0.04 0.04" spider-animator grabbable stoppable-on-grab
             spider-walker="speed: 0.4; radius: 8; changeInterval: 4000">
         </a-entity>
-        <a-entity gltf-model="#scorpion" position="0 0 5" scale="0.3 0.3 0.3"></a-entity>
+        <a-entity gltf-model="#scorpion" position="0 0.2 5" scale="0.3 0.3 0.3" grabbable></a-entity>
 
 
         <!-- Pièces GRABBABLE -->
@@ -880,20 +792,56 @@
         <a-entity gltf-model="#stone_pickaxe" position="4.966 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 -71.425" grabbable></a-entity>
         <a-entity gltf-model="#stone_pickaxe" position="3.090 -0.022 2.221" scale="0.5 0.5 0.5" rotation="90.000 0 100.000" grabbable></a-entity>
 
+
+
+        <!-- Cercueils -->
+        <a-entity gltf-model="#coffin" position="-60 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coffin" position="-56.711 0 0" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coffin" position="-56.711 0 4.535" scale="1 1 1" rotation="0 0 0"></a-entity>        
+        <a-entity gltf-model="#coffin" position="-59.493 0 4.535" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coffin" position="-59.493 0 -5.713" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#coffin" position="-57.820 0 -5.713" scale="1 1 1" rotation="0 0 0"></a-entity>
+
+        <!-- Pièges -->
+        <a-entity gltf-model="#bear_trap" position="-15 0.5 25" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#bear_trap" position="-28 0.5 25" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#bear_trap" position="-15 0.5 -42" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#bear_trap" position="-28 0.5 -42" scale="0.8 0.8 0.8" rotation="0 0 0"></a-entity>
+
+        <!-- Appareils de torture -->
+        <a-entity gltf-model="#torture_device" position="-30.137 0.036 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#torture_device" position="-45.137 0.5 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#torture_device" position="-40.320 0.2 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#torture_device" position="-35.320 0.046 -30" scale="1 1 1" rotation="0 0 0"></a-entity>
+
+        <!-- Pelles -->
+        <a-entity gltf-model="#spade" position="-15 0.5 20" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#spade" position="-28 0.5 20" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#spade" position="-15 0.5 -37" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity gltf-model="#spade" position="-28 0.5 -37" scale="1 1 1" rotation="0 0 0"></a-entity>
+
+        <!-- Trappes -->
+        <a-entity gltf-model="#trap_door" position="2.388 0.033 4.821" scale="1 1 1" rotation="0 90 0"></a-entity>
+        <a-entity gltf-model="#trap_door" position="2.388 0.247 -25.346" scale="1 1 1" rotation="0 90 0"></a-entity>
+
         <!-- Rig VR pour Oculus Quest 1 -->
         <a-entity id="rig" position="-18 0 -9">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
 
-            <!-- Main droite avec GRAB - Quest Touch Controller -->
+            <!-- Main droite avec GRAB -->
             <a-entity id="rhand"
-                oculus-touch-controls="hand: right; model: true"
-                grab-controls="hand: right; grabDistance: 3">
+                oculus-touch-controls="hand: right; model: false"
+                grab-controls="hand: right; grabDistance: 5">
+                <!-- Modèle visuel simple -->
+                <a-box color="#2266ff" width="0.04" height="0.02" depth="0.1" position="0 0 -0.03"></a-box>
             </a-entity>
 
-            <!-- Main gauche avec téléportation - Quest Touch Controller -->
+            <!-- Main gauche avec téléportation -->
             <a-entity id="lhand"
-                oculus-touch-controls="hand: left; model: true"
+                oculus-touch-controls="hand: left; model: false"
                 teleport-controls-custom="cameraRig: #rig; teleportOrigin: #camera; collisionEntities: .teleportable; button: trigger; curveShootingSpeed: 15">
+                <!-- Modèle visuel simple -->
+                <a-box color="#ff6622" width="0.04" height="0.02" depth="0.1" position="0 0 -0.03"></a-box>
             </a-entity>
         </a-entity>
     </a-scene>
