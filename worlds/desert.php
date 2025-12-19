@@ -577,13 +577,13 @@
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
 
             <!-- Main droite avec modèle de main 3D -->
-            <a-entity id="rhand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"
-                oculus-touch-controls="hand: right" grab-controls="hand: right; grabDistance: 5">
+            <a-entity id="rhand" oculus-touch-controls="hand: right; model: false"
+                grab-controls="hand: right; grabDistance: 5">
+                <a-entity hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"></a-entity>
             </a-entity>
 
-            <!-- Main gauche avec modèle de main 3D -->
-            <a-entity id="lhand" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffccaa"
-                oculus-touch-controls="hand: left" teleport-controls="cameraRig: #rig; 
+            <!-- Main gauche avec modèle de main 3D et téléportation -->
+            <a-entity id="lhand" oculus-touch-controls="hand: left; model: false" teleport-controls="cameraRig: #rig; 
                                         teleportOrigin: #camera; 
                                         button: trigger; 
                                         collisionEntities: .teleportable; 
@@ -592,6 +592,7 @@
                                         hitCylinderColor: #ff9900; 
                                         curveColor: #ff9900; 
                                         curveNumberPoints: 40;">
+                <a-entity hand-controls="hand: left; handModelStyle: lowPoly; color: #ffccaa"></a-entity>
             </a-entity>
         </a-entity>
     </a-scene>
