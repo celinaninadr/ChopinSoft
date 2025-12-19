@@ -576,13 +576,14 @@
         <a-entity id="rig" position="-18 0 -9">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
 
-            <!-- Main droite avec modèle de contrôleur Oculus -->
-            <a-entity id="rhand" oculus-touch-controls="hand: right; model: true"
-                grab-controls="hand: right; grabDistance: 5">
+            <!-- Main droite avec modèle de main 3D -->
+            <a-entity id="rhand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"
+                oculus-touch-controls="hand: right" grab-controls="hand: right; grabDistance: 5">
             </a-entity>
 
-            <!-- Main gauche avec modèle de contrôleur Oculus -->
-            <a-entity id="lhand" oculus-touch-controls="hand: left; model: true" teleport-controls="cameraRig: #rig; 
+            <!-- Main gauche avec modèle de main 3D -->
+            <a-entity id="lhand" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffccaa"
+                oculus-touch-controls="hand: left" teleport-controls="cameraRig: #rig; 
                                         teleportOrigin: #camera; 
                                         button: trigger; 
                                         collisionEntities: .teleportable; 
