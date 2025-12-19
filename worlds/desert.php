@@ -23,7 +23,7 @@
                 curveShootingSpeed: { type: 'number', default: 10 },
                 curveNumberPoints: { type: 'number', default: 30 },
                 curveHitColor: { type: 'color', default: '#00ff00' },
-                curveMissColor: { type: 'color', default: '#ff0000' },
+                curveMissColor: { type: 'color', default: '#ff9900' },
                 landingMaxAngle: { type: 'number', default: 45 }
             },
             init: function () {
@@ -39,13 +39,13 @@
                 this.el.addEventListener('triggerup', this.onButtonUp.bind(this));
                 this.el.addEventListener('selectstart', this.onButtonDown.bind(this));
                 this.el.addEventListener('selectend', this.onButtonUp.bind(this));
-                console.log('Teleport controls initialized');
+                console.log('✅ Teleport controls initialized');
             },
             createCurveLine: function () {
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(this.data.curveNumberPoints * 3);
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                const material = new THREE.LineBasicMaterial({ color: this.data.curveMissColor, linewidth: 2 });
+                const material = new THREE.LineBasicMaterial({ color: this.data.curveMissColor, linewidth: 3 });
                 this.curveLine = new THREE.Line(geometry, material);
                 this.curveLine.visible = false;
                 this.curveLine.frustumCulled = false;
@@ -68,9 +68,17 @@
                 this.hitMarker.setAttribute('visible', 'false');
                 this.el.sceneEl.appendChild(this.hitMarker);
             },
-            onButtonDown: function () { this.active = true; this.curveLine.visible = true; },
+            onButtonDown: function () { 
+                console.log('🎯 Trigger pressed');
+                this.active = true; 
+                this.curveLine.visible = true; 
+            },
             onButtonUp: function () {
-                if (this.active && this.hit && this.hitPoint) { this.teleport(); }
+                console.log('🎯 Trigger released');
+                if (this.active && this.hit && this.hitPoint) { 
+                    console.log('✨ Teleporting to:', this.hitPoint);
+                    this.teleport(); 
+                }
                 this.active = false;
                 this.curveLine.visible = false;
                 this.hitMarker.setAttribute('visible', 'false');
@@ -270,6 +278,7 @@
                 this.originalRotation.copy(this.el.object3D.rotation);
                 hand.object3D.attach(this.el.object3D);
                 this.el.emit('grabbed', { hand: hand });
+                console.log('✊ Objet attrapé');
             },
             release: function () {
                 if (!this.isGrabbed) return;
@@ -277,6 +286,7 @@
                 this.isGrabbed = false;
                 this.grabber = null;
                 this.el.emit('released');
+                console.log('✋ Objet relâché');
             }
         });
 
@@ -289,10 +299,17 @@
                 this.raycaster = new THREE.Raycaster();
                 this.raycaster.far = this.data.grabDistance;
                 this.createLaser();
-                const grabEvents = ['gripdown', 'squeezestart', 'abuttondown', 'xbuttondown', 'triggerdown'];
-                const releaseEvents = ['gripup', 'squeezeend', 'abuttonup', 'xbuttonup', 'triggerup'];
-                grabEvents.forEach(evt => { this.el.addEventListener(evt, () => { this.tryGrab(); }); });
-                releaseEvents.forEach(evt => { this.el.addEventListener(evt, () => { this.release(); }); });
+                const grabEvents = ['gripdown', 'squeezestart'];
+                const releaseEvents = ['gripup', 'squeezeend'];
+                grabEvents.forEach(evt => { this.el.addEventListener(evt, () => { 
+                    console.log('🤜 Grip pressed');
+                    this.tryGrab(); 
+                }); });
+                releaseEvents.forEach(evt => { this.el.addEventListener(evt, () => { 
+                    console.log('🤚 Grip released');
+                    this.release(); 
+                }); });
+                console.log('✅ Grab controls initialized for', this.data.hand, 'hand');
             },
             createLaser: function () {
                 this.laser = document.createElement('a-entity');
@@ -438,7 +455,6 @@
             environment="preset: egypt; groundYScale: 6; fog: 0; skyColor: #dcb271; horizonColor: #dcb271; lighting: none"></a-entity>
 
         <a-entity light="type: hemisphere; color: #fff5e6; groundColor: #dcb271; intensity: 0.6"></a-entity>
-
         <a-entity light="type: directional; intensity: 1.2; color: #fff0dd" position="-0.5 1 0.5"></a-entity>
 
         <a-entity gltf-model="#pyramids" position="-45 0 45" scale="100 100 100" rotation="0 0 0"></a-entity>
@@ -569,28 +585,28 @@
         <a-entity gltf-model="#scorpion" position="0 0.2 5" scale="0.3 0.3 0.3" grabbable></a-entity>
 
 
-        <!-- ========== RIG VR OCULUS QUEST ========== 
-             Configuration:
-             - Main droite: GRIP = attraper/lancer
-             - Main gauche: TRIGGER = télépotation -->
+        <!-- ========== RIG VR AVEC MAINS 3D ========== -->
         <a-entity id="rig" position="-18 0 -9">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="enabled: true"></a-camera>
 
-            <!-- Main droite avec modèle de contrôleur Oculus -->
-            <a-entity id="rhand" oculus-touch-controls="hand: right; model: true"
-                grab-controls="hand: right; grabDistance: 5">
+            <!-- Main droite: GRIP pour attraper -->
+            <a-entity id="rhand" 
+                      oculus-touch-controls="hand: right; model: false"
+                      grab-controls="hand: right; grabDistance: 5">
+                <a-entity hand-controls="hand: right; handModelStyle: lowPoly; color: #ffccaa"></a-entity>
             </a-entity>
 
-            <!-- Main gauche avec modèle de contrôleur Oculus -->
-            <a-entity id="lhand" oculus-touch-controls="hand: left; model: true" teleport-controls="cameraRig: #rig; 
-                                        teleportOrigin: #camera; 
-                                        button: trigger; 
-                                        collisionEntities: .teleportable; 
-                                        type: parabolic; 
-                                        curveShootingSpeed: 10; 
-                                        hitCylinderColor: #ff9900; 
-                                        curveColor: #ff9900; 
-                                        curveNumberPoints: 40;">
+            <!-- Main gauche: TRIGGER pour téléporter -->
+            <a-entity id="lhand" 
+                      oculus-touch-controls="hand: left; model: false"
+                      teleport-controls-custom="cameraRig: #rig; 
+                                                teleportOrigin: #camera; 
+                                                collisionEntities: .teleportable; 
+                                                curveShootingSpeed: 10; 
+                                                curveHitColor: #00ff00;
+                                                curveMissColor: #ff9900;
+                                                curveNumberPoints: 40;">
+                <a-entity hand-controls="hand: left; handModelStyle: lowPoly; color: #ffccaa"></a-entity>
             </a-entity>
         </a-entity>
     </a-scene>
